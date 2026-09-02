@@ -1,0 +1,54 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "15101_hr",
+  "ecg_id": 15101,
+  "patient_id": 1050,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 79.0,
+  "sex": 1,
+  "sex_label": "female",
+  "strat_fold": 10,
+  "report": "premature atrial contraction(s). sinus rhythm. left bundle branch block. compared with tracing of 27:9:92, it is not significantly changed.",
+  "heart_axis": null,
+  "infarction_stadium1": null,
+  "validated_by_human": true,
+  "scp_codes": {
+    "CLBBB": 100.0,
+    "1AVB": 100.0,
+    "PAC": 0.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "CLBBB",
+    "1AVB"
+  ],
+  "form_codes": [
+    "PAC"
+  ],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "CD"
+  ],
+  "diagnostic_subclasses": [
+    "CLBBB",
+    "_AVB"
+  ],
+  "is_norm": false
+}

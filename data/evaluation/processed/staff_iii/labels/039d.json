@@ -1,0 +1,84 @@
+{
+  "dataset": "staff_iii",
+  "record_id": "039d",
+  "patient_id": 39,
+  "age": null,
+  "sex": null,
+  "fs": 1000,
+  "n_samples": 367180,
+  "duration_s": 367.18,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "phase": "inflation",
+  "inflations": [
+    {
+      "phase_slot": "BI4",
+      "occluded_artery": "LAD",
+      "occluded_artery_raw": "prox LAD",
+      "d0_s": 0.0,
+      "d1_s": 152.0,
+      "d2_s": 60.0,
+      "injection_times_s": []
+    },
+    {
+      "phase_slot": "BI5",
+      "occluded_artery": "LAD",
+      "occluded_artery_raw": "prox LAD",
+      "d0_s": 212.0,
+      "d1_s": 117.0,
+      "d2_s": 36.0,
+      "injection_times_s": []
+    }
+  ],
+  "events": [
+    {
+      "sample": 1,
+      "label": "balloon inflation"
+    },
+    {
+      "sample": 152000,
+      "label": "balloon deflation"
+    },
+    {
+      "sample": 212001,
+      "label": "balloon inflation"
+    },
+    {
+      "sample": 329000,
+      "label": "balloon deflation"
+    }
+  ],
+  "segments": [
+    {
+      "name": "pre_inflation",
+      "start": 0,
+      "end": 1
+    },
+    {
+      "name": "inflation",
+      "start": 1,
+      "end": 152000
+    },
+    {
+      "name": "post_inflation",
+      "start": 152000,
+      "end": 367180
+    }
+  ],
+  "header_comments": [
+    "Age: 48",
+    "Sex: M"
+  ]
+}

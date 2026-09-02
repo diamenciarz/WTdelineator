@@ -1,0 +1,51 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "05737_hr",
+  "ecg_id": 5737,
+  "patient_id": 6208,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 41.0,
+  "sex": 0,
+  "sex_label": "male",
+  "strat_fold": 10,
+  "report": "premature ventricular contraction(s). sinus rhythm. otherwise normal ecg. Edit: NORM 80, qRIII, negTIII(m,41)(NORM 100)",
+  "heart_axis": null,
+  "infarction_stadium1": null,
+  "validated_by_human": true,
+  "scp_codes": {
+    "NORM": 100.0,
+    "PVC": 0.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "NORM"
+  ],
+  "form_codes": [
+    "PVC"
+  ],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "NORM"
+  ],
+  "diagnostic_subclasses": [
+    "NORM"
+  ],
+  "is_norm": true
+}

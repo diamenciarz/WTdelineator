@@ -1,0 +1,55 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "19388_hr",
+  "ecg_id": 19388,
+  "patient_id": 11424,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 89.0,
+  "sex": 1,
+  "sex_label": "female",
+  "strat_fold": 10,
+  "report": "tachykardes vorhofflimmern ueberdrehter linkstyp linksanteriorer hemiblock qrs(t) abnormal    anteroseptaler infarkt     alter unbest. st & t abnormal, wahrscheinlich    anteriore ischÄmie oder linksbelastung    laterale ischÄmie oder linksbelastung    in",
+  "heart_axis": "ALAD",
+  "infarction_stadium1": "unknown",
+  "validated_by_human": true,
+  "scp_codes": {
+    "ASMI": 100.0,
+    "ISCAL": 100.0,
+    "ABQRS": 0.0,
+    "AFIB": 0.0
+  },
+  "diagnostic_codes": [
+    "ASMI",
+    "ISCAL"
+  ],
+  "form_codes": [
+    "ABQRS"
+  ],
+  "rhythm_codes": [
+    "AFIB"
+  ],
+  "diagnostic_superclasses": [
+    "MI",
+    "STTC"
+  ],
+  "diagnostic_subclasses": [
+    "AMI",
+    "ISCA"
+  ],
+  "is_norm": false
+}

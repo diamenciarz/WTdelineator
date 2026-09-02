@@ -1,0 +1,48 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "04254_hr",
+  "ecg_id": 4254,
+  "patient_id": 20030,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 70.0,
+  "sex": 0,
+  "sex_label": "male",
+  "strat_fold": 10,
+  "report": "sinusrhythmus ueberdrehter linkstyp partieller rechtsschenkelblock",
+  "heart_axis": "ALAD",
+  "infarction_stadium1": null,
+  "validated_by_human": true,
+  "scp_codes": {
+    "IRBBB": 100.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "IRBBB"
+  ],
+  "form_codes": [],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "CD"
+  ],
+  "diagnostic_subclasses": [
+    "IRBBB"
+  ],
+  "is_norm": false
+}

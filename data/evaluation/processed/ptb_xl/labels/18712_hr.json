@@ -1,0 +1,59 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "18712_hr",
+  "ecg_id": 18712,
+  "patient_id": 9636,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 63.0,
+  "sex": 0,
+  "sex_label": "male",
+  "strat_fold": 10,
+  "report": "sinusrhythmus lagetyp normal qrs(t) abnorm    anteroseptaler infarkt     wahrscheinlich alt st & t abnorm, wahrscheinlich    anterolaterale ischÄmie oder linksbelastung t abnorm in inferolateralen ableitungen 4.46                          unbestÄtigter be",
+  "heart_axis": "MID",
+  "infarction_stadium1": "Stadium II-III",
+  "validated_by_human": true,
+  "scp_codes": {
+    "ASMI": 100.0,
+    "LVH": 50.0,
+    "ISC_": 100.0,
+    "ABQRS": 0.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "ASMI",
+    "LVH",
+    "ISC_"
+  ],
+  "form_codes": [
+    "ABQRS"
+  ],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "HYP",
+    "MI",
+    "STTC"
+  ],
+  "diagnostic_subclasses": [
+    "AMI",
+    "ISC_",
+    "LVH"
+  ],
+  "is_norm": false
+}

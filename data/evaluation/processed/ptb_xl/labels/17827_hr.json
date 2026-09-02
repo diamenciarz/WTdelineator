@@ -1,0 +1,53 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "17827_hr",
+  "ecg_id": 17827,
+  "patient_id": 7136,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 81.0,
+  "sex": 1,
+  "sex_label": "female",
+  "strat_fold": 10,
+  "report": "premature atrial contraction(s). sinus rhythm. minor non-specific st segment depression in v4,5,6.",
+  "heart_axis": null,
+  "infarction_stadium1": null,
+  "validated_by_human": true,
+  "scp_codes": {
+    "NORM": 100.0,
+    "PAC": 0.0,
+    "STD_": 0.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "NORM"
+  ],
+  "form_codes": [
+    "PAC",
+    "STD_"
+  ],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "NORM"
+  ],
+  "diagnostic_subclasses": [
+    "NORM"
+  ],
+  "is_norm": true
+}

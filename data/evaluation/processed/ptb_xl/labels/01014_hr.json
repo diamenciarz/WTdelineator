@@ -1,0 +1,57 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "01014_hr",
+  "ecg_id": 1014,
+  "patient_id": 2901,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 78.0,
+  "sex": 0,
+  "sex_label": "male",
+  "strat_fold": 10,
+  "report": "sinus rhythm. prolonged pr interval. non-specific t wave flattening in i, avl. there is a \"pause\" of 2 cycle lengths without an  apparent p wave, it may be due to sinus node dysfunction. holter monitor may be helpful.",
+  "heart_axis": null,
+  "infarction_stadium1": "unknown",
+  "validated_by_human": true,
+  "scp_codes": {
+    "AMI": 100.0,
+    "1AVB": 100.0,
+    "NT_": 0.0,
+    "LPR": 0.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "AMI",
+    "1AVB"
+  ],
+  "form_codes": [
+    "NT_",
+    "LPR"
+  ],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "CD",
+    "MI"
+  ],
+  "diagnostic_subclasses": [
+    "AMI",
+    "_AVB"
+  ],
+  "is_norm": false
+}

@@ -1,0 +1,51 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "12677_hr",
+  "ecg_id": 12677,
+  "patient_id": 5341,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 62.0,
+  "sex": 1,
+  "sex_label": "female",
+  "strat_fold": 10,
+  "report": "sinus rhythm. st segments are depressed in ii, iii, avf, v4,5,6. this may be due to lv strain or ischaemia.",
+  "heart_axis": null,
+  "infarction_stadium1": null,
+  "validated_by_human": true,
+  "scp_codes": {
+    "NORM": 100.0,
+    "STD_": 0.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "NORM"
+  ],
+  "form_codes": [
+    "STD_"
+  ],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "NORM"
+  ],
+  "diagnostic_subclasses": [
+    "NORM"
+  ],
+  "is_norm": true
+}

@@ -1,0 +1,123 @@
+{
+  "dataset": "staff_iii",
+  "record_id": "096c",
+  "patient_id": 96,
+  "age": null,
+  "sex": null,
+  "fs": 1000,
+  "n_samples": 740390,
+  "duration_s": 740.39,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "phase": "inflation",
+  "inflations": [
+    {
+      "phase_slot": "BI1",
+      "occluded_artery": "LCX",
+      "occluded_artery_raw": "dist circ",
+      "d0_s": 94.0,
+      "d1_s": 299.0,
+      "d2_s": 347.0,
+      "injection_times_s": [
+        67.0,
+        81.0,
+        566.0,
+        582.0,
+        633.0
+      ]
+    }
+  ],
+  "events": [
+    {
+      "sample": 67001,
+      "label": "contrast injection"
+    },
+    {
+      "sample": 81001,
+      "label": "contrast injection"
+    },
+    {
+      "sample": 94001,
+      "label": "balloon inflation"
+    },
+    {
+      "sample": 393000,
+      "label": "balloon deflation"
+    },
+    {
+      "sample": 566001,
+      "label": "contrast injection"
+    },
+    {
+      "sample": 582001,
+      "label": "contrast injection"
+    },
+    {
+      "sample": 633001,
+      "label": "contrast injection"
+    }
+  ],
+  "segments": [
+    {
+      "name": "pre_inflation",
+      "start": 0,
+      "end": 94001
+    },
+    {
+      "name": "inflation",
+      "start": 94001,
+      "end": 393000
+    },
+    {
+      "name": "post_inflation",
+      "start": 393000,
+      "end": 740390
+    },
+    {
+      "name": "contrast_injection",
+      "start": 67001,
+      "end": 67001,
+      "kind": "instant"
+    },
+    {
+      "name": "contrast_injection",
+      "start": 81001,
+      "end": 81001,
+      "kind": "instant"
+    },
+    {
+      "name": "contrast_injection",
+      "start": 566001,
+      "end": 566001,
+      "kind": "instant"
+    },
+    {
+      "name": "contrast_injection",
+      "start": 582001,
+      "end": 582001,
+      "kind": "instant"
+    },
+    {
+      "name": "contrast_injection",
+      "start": 633001,
+      "end": 633001,
+      "kind": "instant"
+    }
+  ],
+  "header_comments": [
+    "Age: 76",
+    "Sex: M"
+  ]
+}

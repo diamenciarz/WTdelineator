@@ -1,0 +1,48 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "16144_hr",
+  "ecg_id": 16144,
+  "patient_id": 21339,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 43.0,
+  "sex": 0,
+  "sex_label": "male",
+  "strat_fold": 10,
+  "report": "sinusrhythmus lagetyp normal normales ekg",
+  "heart_axis": "MID",
+  "infarction_stadium1": null,
+  "validated_by_human": true,
+  "scp_codes": {
+    "NORM": 100.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "NORM"
+  ],
+  "form_codes": [],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "NORM"
+  ],
+  "diagnostic_subclasses": [
+    "NORM"
+  ],
+  "is_norm": true
+}

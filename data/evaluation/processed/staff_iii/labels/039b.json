@@ -1,0 +1,48 @@
+{
+  "dataset": "staff_iii",
+  "record_id": "039b",
+  "patient_id": 39,
+  "age": null,
+  "sex": null,
+  "fs": 1000,
+  "n_samples": 300000,
+  "duration_s": 300.0,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "phase": "baseline_cathlab",
+  "inflations": [
+    {
+      "phase_slot": "BC1",
+      "occluded_artery": null,
+      "occluded_artery_raw": null,
+      "d0_s": null,
+      "d1_s": null,
+      "d2_s": null,
+      "injection_times_s": []
+    }
+  ],
+  "events": [],
+  "segments": [
+    {
+      "name": "full_recording",
+      "start": 0,
+      "end": 300000
+    }
+  ],
+  "header_comments": [
+    "Age: 48",
+    "Sex: M"
+  ]
+}

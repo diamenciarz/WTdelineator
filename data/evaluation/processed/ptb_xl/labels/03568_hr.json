@@ -1,0 +1,57 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "03568_hr",
+  "ecg_id": 3568,
+  "patient_id": 9001,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 77.0,
+  "sex": 0,
+  "sex_label": "male",
+  "strat_fold": 10,
+  "report": "sinusrhythmus lagetyp normal unvollstÄndiger rechtsschenkelblock qrs(t) abnormal pathologisch",
+  "heart_axis": "MID",
+  "infarction_stadium1": "unknown",
+  "validated_by_human": true,
+  "scp_codes": {
+    "ASMI": 50.0,
+    "ALMI": 100.0,
+    "IRBBB": 100.0,
+    "ABQRS": 0.0,
+    "SR": 0.0
+  },
+  "diagnostic_codes": [
+    "ASMI",
+    "ALMI",
+    "IRBBB"
+  ],
+  "form_codes": [
+    "ABQRS"
+  ],
+  "rhythm_codes": [
+    "SR"
+  ],
+  "diagnostic_superclasses": [
+    "CD",
+    "MI"
+  ],
+  "diagnostic_subclasses": [
+    "AMI",
+    "IRBBB"
+  ],
+  "is_norm": false
+}

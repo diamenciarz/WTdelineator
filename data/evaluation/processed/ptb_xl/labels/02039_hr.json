@@ -1,0 +1,52 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "02039_hr",
+  "ecg_id": 2039,
+  "patient_id": 307,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 59.0,
+  "sex": 1,
+  "sex_label": "female",
+  "strat_fold": 10,
+  "report": "sinus tachycardia. t waves are low throughout and slightly inverted in v2-5. myocardial ischaemia is likely. suggest exclude hypokalaemia. the age of the changes is uncertain.",
+  "heart_axis": null,
+  "infarction_stadium1": null,
+  "validated_by_human": true,
+  "scp_codes": {
+    "NDT": 100.0,
+    "LOWT": 0.0,
+    "STACH": 0.0
+  },
+  "diagnostic_codes": [
+    "NDT"
+  ],
+  "form_codes": [
+    "NDT",
+    "LOWT"
+  ],
+  "rhythm_codes": [
+    "STACH"
+  ],
+  "diagnostic_superclasses": [
+    "STTC"
+  ],
+  "diagnostic_subclasses": [
+    "STTC"
+  ],
+  "is_norm": false
+}

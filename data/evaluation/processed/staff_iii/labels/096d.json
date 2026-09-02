@@ -1,0 +1,79 @@
+{
+  "dataset": "staff_iii",
+  "record_id": "096d",
+  "patient_id": 96,
+  "age": null,
+  "sex": null,
+  "fs": 1000,
+  "n_samples": 369332,
+  "duration_s": 369.332,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "phase": "inflation",
+  "inflations": [
+    {
+      "phase_slot": "BI2",
+      "occluded_artery": "LCX",
+      "occluded_artery_raw": "dist circ",
+      "d0_s": 9.0,
+      "d1_s": 296.0,
+      "d2_s": 64.0,
+      "injection_times_s": [
+        326.0
+      ]
+    }
+  ],
+  "events": [
+    {
+      "sample": 9001,
+      "label": "balloon inflation"
+    },
+    {
+      "sample": 305000,
+      "label": "balloon deflation"
+    },
+    {
+      "sample": 326001,
+      "label": "contrast injection"
+    }
+  ],
+  "segments": [
+    {
+      "name": "pre_inflation",
+      "start": 0,
+      "end": 9001
+    },
+    {
+      "name": "inflation",
+      "start": 9001,
+      "end": 305000
+    },
+    {
+      "name": "post_inflation",
+      "start": 305000,
+      "end": 369332
+    },
+    {
+      "name": "contrast_injection",
+      "start": 326001,
+      "end": 326001,
+      "kind": "instant"
+    }
+  ],
+  "header_comments": [
+    "Age: 76",
+    "Sex: M"
+  ]
+}

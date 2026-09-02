@@ -229,25 +229,25 @@ METRIC_REGISTRY: Dict[str, Callable] = {
     "heart_rate": metric_heart_rate,
     "hr_min": metric_hr_min,
     "hr_max": metric_hr_max,
-    "PR_interval": metric_PR_interval,
-    "QRS_duration": metric_QRS_duration,
-    "QT_interval": metric_QT_interval,
-    "JT_interval": metric_JT_interval,
-    "QTc_Bazett": metric_QTc_Bazett,
-    "QTc_Fridericia": metric_QTc_Fridericia,
-    "HRV_SDNN": metric_HRV_SDNN,
-    "HRV_RMSSD": metric_HRV_RMSSD,
+    "pr_interval": metric_PR_interval,
+    "qrs_duration": metric_QRS_duration,
+    "qt_interval": metric_QT_interval,
+    "jt_interval": metric_JT_interval,
+    "qtc_bazett": metric_QTc_Bazett,
+    "qtc_fridericia": metric_QTc_Fridericia,
+    "hrv_sdnn": metric_HRV_SDNN,
+    "hrv_rmssd": metric_HRV_RMSSD,
     # 2. Amplitudes
-    "P_amplitude": metric_P_amplitude,
-    "R_amplitude": metric_R_amplitude,
-    "S_amplitude": metric_S_amplitude,
-    "T_amplitude": metric_T_amplitude,
+    "p_amplitude": metric_P_amplitude,
+    "r_amplitude": metric_R_amplitude,
+    "s_amplitude": metric_S_amplitude,
+    "t_amplitude": metric_T_amplitude,
     # 3. ST / J-point
-    "STE_Jpoint": metric_STE_Jpoint,
-    "STE60": metric_STE60,
-    "STE80": metric_STE80,
+    "ste_j_point": metric_STE_Jpoint,
+    "ste60": metric_STE60,
+    "ste80": metric_STE80,
     # 6. Risk scores
-    "Smith_3var": metric_smith_formula_3var,
+    "smith_3var": metric_smith_formula_3var,
 }
 
 
@@ -255,21 +255,21 @@ def compute_ecg_metrics(
     ecg_signal: np.ndarray | Dict[str, np.ndarray],
     fs: int,
     delineation: Dict[str, Dict[str, np.ndarray]],
-    requested_metrics: List[str] = None,
+    requested_metrics: List[str] = list(),
     lead_name: str = "Unknown",
 ) -> pd.DataFrame:
     """
     Compute only the requested metrics using the registry.
-    If requested_metrics is None → compute all.
+    If requested_metrics is empty → compute all.
 
     Args:
         ecg_signal: ECG signal(s) - either 1D array or dict of signals keyed by lead name
         fs: Sampling frequency in Hz
         delineation: Dict of delineation dicts, keyed by lead name
-        requested_metrics: List of metric names to compute, or None for all
+        requested_metrics: List of metric names to compute, or empty list for all
         lead_name: Which lead/channel to compute metrics for
     """
-    if requested_metrics is None:
+    if len(requested_metrics) == 0:
         requested_metrics = list(METRIC_REGISTRY.keys())
 
     # Extract the signal and delineation for the specified lead
@@ -280,12 +280,12 @@ def compute_ecg_metrics(
 
     channel_delineation = delineation[lead_name]
 
-    results = {"lead": lead_name}
+    results: dict[str, float | str] = {"lead": lead_name}
 
     for metric_name in requested_metrics:
-        if metric_name in METRIC_REGISTRY:
+        if metric_name.lower() in METRIC_REGISTRY:
             try:
-                func = METRIC_REGISTRY[metric_name]
+                func = METRIC_REGISTRY[metric_name.lower()]
                 results[metric_name] = func(signal, fs, channel_delineation)
             except Exception as e:
                 results[metric_name] = np.nan

@@ -1,0 +1,50 @@
+{
+  "dataset": "ptb_xl",
+  "record_id": "16566_hr",
+  "ecg_id": 16566,
+  "patient_id": 11424,
+  "fs": 500,
+  "n_samples": 5000,
+  "channels": [
+    "I",
+    "II",
+    "III",
+    "aVR",
+    "aVL",
+    "aVF",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6"
+  ],
+  "age": 87.0,
+  "sex": 1,
+  "sex_label": "female",
+  "strat_fold": 10,
+  "report": "tachykardes vorhofflimmern schwierig bestimmbare qrs-achse chron. anteroseptaler infarkt wahrscheinlich koronares ekg",
+  "heart_axis": null,
+  "infarction_stadium1": "unknown",
+  "validated_by_human": true,
+  "scp_codes": {
+    "ASMI": 100.0,
+    "INJAL": 100.0,
+    "AFIB": 0.0
+  },
+  "diagnostic_codes": [
+    "ASMI",
+    "INJAL"
+  ],
+  "form_codes": [],
+  "rhythm_codes": [
+    "AFIB"
+  ],
+  "diagnostic_superclasses": [
+    "MI"
+  ],
+  "diagnostic_subclasses": [
+    "AMI"
+  ],
+  "is_norm": false
+}
