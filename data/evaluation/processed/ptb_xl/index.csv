@@ -23,3 +23,4 @@ record_id,ecg_id,patient_id,sex,age,strat_fold,is_norm,superclasses,subclasses,s
 17827_hr,17827,7136,female,81.0,10,True,NORM,NORM,NORM:100.0;PAC:0.0;STD_:0.0;SR:0.0,data\evaluation\processed\ptb_xl\signals\17827_hr.npy
 18712_hr,18712,9636,male,63.0,10,False,HYP;MI;STTC,AMI;ISC_;LVH,ASMI:100.0;LVH:50.0;ISC_:100.0;ABQRS:0.0;SR:0.0,data\evaluation\processed\ptb_xl\signals\18712_hr.npy
 19388_hr,19388,11424,female,89.0,10,False,MI;STTC,AMI;ISCA,ASMI:100.0;ISCAL:100.0;ABQRS:0.0;AFIB:0.0,data\evaluation\processed\ptb_xl\signals\19388_hr.npy
+00001_hr,1,15709,female,56.0,3,True,NORM,NORM,NORM:100.0;LVOLT:0.0;SR:0.0,data\evaluation\processed\ptb_xl\signals\00001_hr.npy

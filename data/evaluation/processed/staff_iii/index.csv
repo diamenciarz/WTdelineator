@@ -1,1 +1,9 @@
-
+record_id,patient_id,phase,fs,n_samples,duration_s,age,sex,occluded_artery
+039a,39,baseline_room,1000,300000,300.0,,,
+039b,39,baseline_cathlab,1000,300000,300.0,,,
+039c,39,inflation,1000,759492,759.492,,,LAD
+039d,39,inflation,1000,367180,367.18,,,LAD
+077c,77,inflation,1000,430330,430.33,,,RCA
+096c,96,inflation,1000,740390,740.39,,,LCX
+096d,96,inflation,1000,369332,369.332,,,LCX
+096e,96,inflation,1000,300268,300.268,,,LCX

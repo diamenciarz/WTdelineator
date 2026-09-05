@@ -1,0 +1,201 @@
+record_id,fs,n_samples,age,sex,rhythm,axis,conduction,extrasystoles,hypertrophy,pacing,ischemia,nonspecific_repol,other,n_qrs_annotations_all_leads,npy
+116,500,5000,40,M,Sinus rhythm,left axis deviation,Complete right bundle branch block,,Left atrial hypertrophy,,,,,156,data\evaluation\processed\ludb\signals\116.npy
+129,500,5000,88,M,Atrial fibrillation,left axis deviation,,,Left ventricular hypertrophy,,Scar formation: anterior wall; Scar formation: septal,,,96,data\evaluation\processed\ludb\signals\129.npy
+153,500,5000,27,M,Sinus rhythm,normal,,,,,,inferior wall,,96,data\evaluation\processed\ludb\signals\153.npy
+159,500,5000,23,M,Sinus rhythm,normal,,,,,,Early repolarization syndrome,,108,data\evaluation\processed\ludb\signals\159.npy
+16,500,5000,60,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,anterior wall,,,120,data\evaluation\processed\ludb\signals\16.npy
+166,500,5000,20,M,Sinus rhythm,normal,,,,,,,,96,data\evaluation\processed\ludb\signals\166.npy
+171,500,5000,24,M,Sinus rhythm,normal,,,,,,Early repolarization syndrome,,108,data\evaluation\processed\ludb\signals\171.npy
+175,500,5000,24,F,Sinus rhythm,normal,"Sinoatrial blockade, undefined",,,,,,,108,data\evaluation\processed\ludb\signals\175.npy
+178,500,5000,44,M,Sinus arrhythmia,normal,,,Right atrial overload; Left atrial overload,,,,,144,data\evaluation\processed\ludb\signals\178.npy
+183,500,5000,63,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left atrial overload; Left ventricular hypertrophy; Left ventricular overload,,Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: posterior wall,,,132,data\evaluation\processed\ludb\signals\183.npy
+187,500,5000,22,F,Sinus rhythm,normal,,,,,,,,108,data\evaluation\processed\ludb\signals\187.npy
+31,500,5000,71,F,Sinus rhythm,left axis deviation,Incomplete right bundle branch block,,Left ventricular hypertrophy,,lateral wall; inferior wall; apical,,,108,data\evaluation\processed\ludb\signals\31.npy
+46,500,5000,63,M,Sinus rhythm,left axis deviation,Left anterior hemiblock,,Left atrial hypertrophy; Left ventricular hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: apical,,,96,data\evaluation\processed\ludb\signals\46.npy
+57,500,5000,65,F,Sinus rhythm,right axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy; Left ventricular overload,,Scar formation: posterior wall; Undefined ischemia/scar/supp.NSTEMI: anterior wall,,,144,data\evaluation\processed\ludb\signals\57.npy
+67,500,5000,77,M,Sinus rhythm,vertical,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,84,data\evaluation\processed\ludb\signals\67.npy
+69,500,5000,72,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,STEMI: anterior wall; STEMI: lateral wall; STEMI: septal; Undefined ischemia/scar/supp.NSTEMI: posterior wall,,,132,data\evaluation\processed\ludb\signals\69.npy
+70,500,5000,52,M,Sinus tachycardia,normal,Incomplete right bundle branch block,,Left atrial overload,,,,,156,data\evaluation\processed\ludb\signals\70.npy
+79,500,5000,76,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,inferior wall,,,96,data\evaluation\processed\ludb\signals\79.npy
+83,500,5000,62,M,Atrial fibrillation,left axis deviation,Left anterior hemiblock; Complete left bundle branch block,"Ventricular extrasystole, morphology: polymorphic; Ventricular extrasystole, localisation: LVOT, LVS; Ventricular extrasystole, type: single PVC; Ventricular extrasystole, type: couplet",,,Scar formation: anterior wall; Scar formation: septal; Scar formation: posterior wall,,,120,data\evaluation\processed\ludb\signals\83.npy
+96,500,5000,60,F,Atrial fibrillation,normal,,,Left ventricular hypertrophy,,,inferior wall,,144,data\evaluation\processed\ludb\signals\96.npy
+1,500,5000,51,F,Sinus bradycardia,left axis deviation,,,Left ventricular hypertrophy; Left ventricular overload,,,posterior wall,,72,data\evaluation\processed\ludb\signals\1.npy
+10,500,5000,79,F,Sinus rhythm,left axis deviation,Complete right bundle branch block,,Left atrial hypertrophy,,Scar formation: inferior wall,,,96,data\evaluation\processed\ludb\signals\10.npy
+100,500,5000,76,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left atrial overload; Left ventricular hypertrophy,,anterior wall; lateral wall,,,108,data\evaluation\processed\ludb\signals\100.npy
+101,500,5000,44,M,Atrial fibrillation,vertical,,,Left ventricular hypertrophy,,,anterior wall; septal; apical,,132,data\evaluation\processed\ludb\signals\101.npy
+102,500,5000,62,F,Sinus rhythm,normal,Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,108,data\evaluation\processed\ludb\signals\102.npy
+103,500,5000,69,M,"Atrial flutter, typical",horizontal,,,Left ventricular hypertrophy,,,,,168,data\evaluation\processed\ludb\signals\103.npy
+104,500,5000,75,F,Sinus rhythm,,III degree AV-block,,,UNIpolar ventricular pacing,,,,72,data\evaluation\processed\ludb\signals\104.npy
+105,500,5000,58,F,Sinus rhythm,normal,,"Ventricular extrasystole, localisation: IVS, middle part; Ventricular extrasystole, type: single PVC; Ventricular extrasystole, type: intercalary PVC",Left atrial hypertrophy; Left ventricular hypertrophy,,,,,132,data\evaluation\processed\ludb\signals\105.npy
+106,500,5000,64,M,Sinus rhythm,left axis deviation,,"Ventricular extrasystole, localisation: RVOT, antero-septal part; Ventricular extrasystole, type: single PVC",Left atrial hypertrophy; Left ventricular hypertrophy,,Scar formation: posterior wall,lateral wall,,144,data\evaluation\processed\ludb\signals\106.npy
+107,500,5000,57,F,Sinus rhythm,left axis deviation,I degree AV block; Incomplete right bundle branch block,,,,,anterior wall; lateral wall; posterior wall,,96,data\evaluation\processed\ludb\signals\107.npy
+108,500,5000,55,M,Irregular sinus rhythm,left axis deviation,Left anterior hemiblock; Complete right bundle branch block,"Atrial extrasystole: left atrial; Atrial extrasystole, type: quadrigemini",Left atrial hypertrophy,,,septal; apical,,132,data\evaluation\processed\ludb\signals\108.npy
+109,500,5000,82,F,Atrial fibrillation,left axis deviation,,,Left ventricular hypertrophy; Left ventricular overload,,Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: apical,,,180,data\evaluation\processed\ludb\signals\109.npy
+11,500,5000,54,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: inferior wall,,,96,data\evaluation\processed\ludb\signals\11.npy
+110,500,5000,62,M,Atrial fibrillation,left axis deviation,,"Ventricular extrasystole, localisation: LVOT, LVS; Ventricular extrasystole, type: single PVC",,,Scar formation: lateral wall; Scar formation: apical,,,156,data\evaluation\processed\ludb\signals\110.npy
+111,500,5000,87,F,Sinus rhythm,,III degree AV-block,,,BIpolar ventricular pacing,,,,79,data\evaluation\processed\ludb\signals\111.npy
+112,500,5000,54,F,Atrial fibrillation,left axis deviation,Incomplete left bundle branch block,,Left ventricular hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: septal; Undefined ischemia/scar/supp.NSTEMI: posterior wall,,,168,data\evaluation\processed\ludb\signals\112.npy
+113,500,5000,53,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\113.npy
+114,500,5000,58,M,Sinus tachycardia,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,Scar formation: posterior wall,,,156,data\evaluation\processed\ludb\signals\114.npy
+115,500,5000,44,M,Sinus bradycardia,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,84,data\evaluation\processed\ludb\signals\115.npy
+117,500,5000,23,M,Sinus tachycardia,vertical,Incomplete right bundle branch block,,,,,,,156,data\evaluation\processed\ludb\signals\117.npy
+118,500,5000,57,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,Early repolarization syndrome,,96,data\evaluation\processed\ludb\signals\118.npy
+119,500,5000,26,M,Sinus rhythm,normal,,,,,,,,96,data\evaluation\processed\ludb\signals\119.npy
+12,500,5000,61,M,Sinus bradycardia,left axis deviation,,,Left atrial hypertrophy,,,,,84,data\evaluation\processed\ludb\signals\12.npy
+120,500,5000,70,M,Sinus rhythm,horizontal,I degree AV block; Incomplete left bundle branch block,,Right atrial hypertrophy; Left atrial hypertrophy; Right atrial overload; Left ventricular hypertrophy; Left ventricular overload,,,,,96,data\evaluation\processed\ludb\signals\120.npy
+121,500,5000,68,M,Sinus rhythm,left axis deviation,,,Left ventricular hypertrophy,,,,,180,data\evaluation\processed\ludb\signals\121.npy
+122,500,5000,25,F,Sinus rhythm,vertical,Incomplete left bundle branch block,,,,,,,96,data\evaluation\processed\ludb\signals\122.npy
+123,500,5000,18,M,Sinus rhythm,normal,,,,,,,,108,data\evaluation\processed\ludb\signals\123.npy
+124,500,5000,66,M,Sinus rhythm,left axis deviation,,,Left atrial overload; Left ventricular hypertrophy,,,lateral wall; apical,,84,data\evaluation\processed\ludb\signals\124.npy
+125,500,5000,67,M,Sinus bradycardia,left axis deviation,Incomplete right bundle branch block; Left anterior hemiblock,"Ventricular extrasystole, morphology: polymorphic; Ventricular extrasystole, localisation: RVOT, anterior wall; Ventricular extrasystole, localisation: LV, undefined; Ventricular extrasystole, type: couplet",Left atrial hypertrophy; Left ventricular hypertrophy; Left ventricular overload,,,,,84,data\evaluation\processed\ludb\signals\125.npy
+126,500,5000,70,M,Sinus rhythm,left axis deviation,Incomplete right bundle branch block; Left anterior hemiblock,,Left atrial hypertrophy; Left ventricular hypertrophy; Left ventricular overload,,,lateral wall,,108,data\evaluation\processed\ludb\signals\126.npy
+127,500,5000,86,M,Sinus bradycardia,horizontal,,,Left atrial hypertrophy; Left atrial overload; Left ventricular hypertrophy; Left ventricular overload,Wandering atrial pacemaker,Scar formation: posterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: apical,,,48,data\evaluation\processed\ludb\signals\127.npy
+128,500,5000,26,M,Sinus bradycardia,normal,,,,,,Early repolarization syndrome,,84,data\evaluation\processed\ludb\signals\128.npy
+13,500,5000,62,M,Sinus rhythm,left axis deviation,I degree AV block; Incomplete left bundle branch block,,Left atrial hypertrophy,,Scar formation: inferior wall; Scar formation: apical; Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall,,,84,data\evaluation\processed\ludb\signals\13.npy
+130,500,5000,59,F,Sinus rhythm,horizontal,,,Left ventricular hypertrophy,,,lateral wall; septal; apical,,84,data\evaluation\processed\ludb\signals\130.npy
+131,500,5000,69,M,Sinus rhythm,left axis deviation,I degree AV block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\131.npy
+132,500,5000,71,M,Irregular sinus rhythm,left axis deviation,,"Atrial extrasystole: SA-nodal extrasystole; Atrial extrasystole, type: bigemini; Atrial extrasystole, type: allorhythmic pattern",Right atrial overload; Left ventricular hypertrophy,,,septal,,96,data\evaluation\processed\ludb\signals\132.npy
+133,500,5000,68,M,Sinus bradycardia,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,lateral wall; apical,,84,data\evaluation\processed\ludb\signals\133.npy
+134,500,5000,65,M,Sinus bradycardia,left axis deviation,I degree AV block,,Left atrial hypertrophy; Left ventricular hypertrophy,,Scar formation: septal; Scar formation: posterior wall; Scar formation: apical; Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: septal; Undefined ischemia/scar/supp.NSTEMI: apical,,,72,data\evaluation\processed\ludb\signals\134.npy
+135,500,5000,26,M,Sinus rhythm,normal,,,,,,,,108,data\evaluation\processed\ludb\signals\135.npy
+136,500,5000,22,F,Sinus rhythm,vertical,,,Right atrial overload,,,,,156,data\evaluation\processed\ludb\signals\136.npy
+137,500,5000,58,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,108,data\evaluation\processed\ludb\signals\137.npy
+138,500,5000,67,F,Sinus rhythm,left axis deviation,Left anterior hemiblock,,Left atrial hypertrophy,,,anterior wall; septal; inferior wall; apical,,96,data\evaluation\processed\ludb\signals\138.npy
+139,500,5000,61,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,posterior wall,,120,data\evaluation\processed\ludb\signals\139.npy
+14,500,5000,50,M,Sinus rhythm,vertical,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,144,data\evaluation\processed\ludb\signals\14.npy
+140,500,5000,19,M,Sinus rhythm,normal,,,,Wandering atrial pacemaker,,Early repolarization syndrome,,132,data\evaluation\processed\ludb\signals\140.npy
+141,500,5000,39,M,Sinus rhythm,left axis deviation,Incomplete right bundle branch block,,Right atrial overload,,,,,96,data\evaluation\processed\ludb\signals\141.npy
+142,500,5000,43,F,Sinus rhythm,normal,,,,,,,,120,data\evaluation\processed\ludb\signals\142.npy
+143,500,5000,47,F,Sinus rhythm,vertical,,,Left atrial hypertrophy,,,,,144,data\evaluation\processed\ludb\signals\143.npy
+144,500,5000,19,F,Sinus rhythm,normal,,,,,,inferior wall,,108,data\evaluation\processed\ludb\signals\144.npy
+145,500,5000,15,M,Sinus rhythm,normal,,,,,,Early repolarization syndrome,,108,data\evaluation\processed\ludb\signals\145.npy
+146,500,5000,19,M,Sinus bradycardia,vertical,,,,,,,,96,data\evaluation\processed\ludb\signals\146.npy
+147,500,5000,63,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy; Left ventricular overload,,,lateral wall; posterior wall; apical,,96,data\evaluation\processed\ludb\signals\147.npy
+148,500,5000,26,F,Sinus rhythm,vertical,,,Right atrial overload,,,,,120,data\evaluation\processed\ludb\signals\148.npy
+149,500,5000,25,M,Sinus rhythm,normal,,,,,,,,108,data\evaluation\processed\ludb\signals\149.npy
+15,500,5000,71,M,Sinus rhythm,left axis deviation,I degree AV block,,Left atrial hypertrophy; Left ventricular hypertrophy,,anterior wall; lateral wall; septal; apical,,,95,data\evaluation\processed\ludb\signals\15.npy
+150,500,5000,35,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\150.npy
+151,500,5000,54,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,120,data\evaluation\processed\ludb\signals\151.npy
+152,500,5000,30,M,Sinus rhythm,normal,,,,,,,,108,data\evaluation\processed\ludb\signals\152.npy
+154,500,5000,23,M,Sinus rhythm,vertical,,,,,,,,108,data\evaluation\processed\ludb\signals\154.npy
+155,500,5000,47,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\155.npy
+156,500,5000,22,F,Sinus arrhythmia,normal,Incomplete right bundle branch block,,,,,,,84,data\evaluation\processed\ludb\signals\156.npy
+157,500,5000,28,M,Sinus rhythm,normal,,,,,,,,84,data\evaluation\processed\ludb\signals\157.npy
+158,500,5000,23,M,Sinus arrhythmia,vertical,,,,,,inferior wall,,96,data\evaluation\processed\ludb\signals\158.npy
+160,500,5000,20,M,Sinus bradycardia,vertical,,,,,,Early repolarization syndrome,,60,data\evaluation\processed\ludb\signals\160.npy
+161,500,5000,19,M,Sinus rhythm,normal,,,,,,,,96,data\evaluation\processed\ludb\signals\161.npy
+162,500,5000,30,M,Sinus rhythm,normal,,,,,,,,120,data\evaluation\processed\ludb\signals\162.npy
+163,500,5000,56,F,Sinus rhythm,left axis deviation,,,Right atrial overload; Left atrial overload; Left ventricular hypertrophy,,,inferior wall,,120,data\evaluation\processed\ludb\signals\163.npy
+164,500,5000,41,F,Sinus rhythm,left axis deviation,Left anterior hemiblock,,Left atrial hypertrophy; Left ventricular hypertrophy,,Scar formation: anterior wall; Scar formation: septal,posterior wall,,108,data\evaluation\processed\ludb\signals\164.npy
+165,500,5000,57,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,108,data\evaluation\processed\ludb\signals\165.npy
+167,500,5000,19,M,Sinus rhythm,normal,,,,,,Early repolarization syndrome,,108,data\evaluation\processed\ludb\signals\167.npy
+168,500,5000,20,M,Sinus rhythm,vertical,,,,,,,,96,data\evaluation\processed\ludb\signals\168.npy
+169,500,5000,44,F,Sinus bradycardia,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,84,data\evaluation\processed\ludb\signals\169.npy
+17,500,5000,71,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy; Right ventricular hypertrophy,,,,,120,data\evaluation\processed\ludb\signals\17.npy
+170,500,5000,35,F,Sinus bradycardia,normal,,,Left ventricular hypertrophy,,,,,84,data\evaluation\processed\ludb\signals\170.npy
+172,500,5000,60,F,Sinus bradycardia,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,septal; apical,,84,data\evaluation\processed\ludb\signals\172.npy
+173,500,5000,79,M,Atrial fibrillation,horizontal,,,Left ventricular hypertrophy,,,inferior wall,,144,data\evaluation\processed\ludb\signals\173.npy
+174,500,5000,39,F,Sinus rhythm,normal,,,Right atrial overload,,,,,96,data\evaluation\processed\ludb\signals\174.npy
+176,500,5000,60,M,Sinus rhythm,horizontal,Incomplete right bundle branch block,,Right atrial overload,,,posterior wall,,96,data\evaluation\processed\ludb\signals\176.npy
+177,500,5000,18,F,Sinus rhythm,vertical,,,,,,,,132,data\evaluation\processed\ludb\signals\177.npy
+179,500,5000,66,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\179.npy
+18,500,5000,48,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,inferior wall,,,132,data\evaluation\processed\ludb\signals\18.npy
+180,500,5000,34,F,Sinus rhythm,right axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,120,data\evaluation\processed\ludb\signals\180.npy
+181,500,5000,54,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\181.npy
+182,500,5000,38,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,144,data\evaluation\processed\ludb\signals\182.npy
+184,500,5000,11,M,Sinus arrhythmia,normal,,,,Wandering atrial pacemaker,,,,108,data\evaluation\processed\ludb\signals\184.npy
+185,500,5000,19,M,Sinus rhythm,normal,Incomplete right bundle branch block,,Right atrial overload; Left atrial overload,,,,,156,data\evaluation\processed\ludb\signals\185.npy
+186,500,5000,42,F,Sinus rhythm,vertical,,,Right atrial overload; Left atrial overload,,,,,132,data\evaluation\processed\ludb\signals\186.npy
+188,500,5000,17,F,Sinus tachycardia,horizontal,,,Right atrial overload,,,,,168,data\evaluation\processed\ludb\signals\188.npy
+189,500,5000,17,F,Sinus bradycardia,horizontal,,,,,,anterior wall; septal,,96,data\evaluation\processed\ludb\signals\189.npy
+19,500,5000,66,M,Sinus rhythm,left axis deviation,Incomplete left bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,posterior wall,,96,data\evaluation\processed\ludb\signals\19.npy
+190,500,5000,19,M,Sinus rhythm,vertical,,,,,,,,144,data\evaluation\processed\ludb\signals\190.npy
+191,500,5000,24,M,Sinus rhythm,normal,,,,,,Early repolarization syndrome,,96,data\evaluation\processed\ludb\signals\191.npy
+192,500,5000,51,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\192.npy
+193,500,5000,42,F,Sinus rhythm,normal,,,,,,,,108,data\evaluation\processed\ludb\signals\193.npy
+194,500,5000,28,M,Sinus rhythm,vertical,,,,,,,,96,data\evaluation\processed\ludb\signals\194.npy
+195,500,5000,28,F,Sinus rhythm,normal,,,,,,,,108,data\evaluation\processed\ludb\signals\195.npy
+196,500,5000,63,F,Sinus rhythm,horizontal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,anterior wall; septal,,120,data\evaluation\processed\ludb\signals\196.npy
+197,500,5000,34,F,Sinus arrhythmia,normal,,,Right atrial overload,,,,,132,data\evaluation\processed\ludb\signals\197.npy
+198,500,5000,38,F,Sinus rhythm,normal,,,,,,,,96,data\evaluation\processed\ludb\signals\198.npy
+199,500,5000,34,F,Sinus rhythm,normal,,,,,,,,96,data\evaluation\processed\ludb\signals\199.npy
+2,500,5000,64,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,posterior wall,,108,data\evaluation\processed\ludb\signals\2.npy
+20,500,5000,53,M,Sinus rhythm,vertical,I degree AV block,,Left atrial hypertrophy; Left ventricular hypertrophy; Left ventricular overload,,lateral wall; inferior wall,,,96,data\evaluation\processed\ludb\signals\20.npy
+200,500,5000,56,F,Sinus rhythm,normal,,,Left ventricular hypertrophy,,,anterior wall,,108,data\evaluation\processed\ludb\signals\200.npy
+21,500,5000,55,M,Sinus rhythm,left axis deviation,Left anterior hemiblock,,,,STEMI: anterior wall; STEMI: lateral wall; STEMI: septal; STEMI: apical,,,120,data\evaluation\processed\ludb\signals\21.npy
+22,500,5000,66,M,Sinus arrhythmia,horizontal,Incomplete right bundle branch block,Atrial extrasystole: undefined,Left atrial hypertrophy,,,anterior wall; lateral wall,,132,data\evaluation\processed\ludb\signals\22.npy
+23,500,5000,64,M,Sinus rhythm,left axis deviation,Complete right bundle branch block,,Left atrial hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\23.npy
+24,500,5000,64,M,Sinus bradycardia,horizontal,Complete left bundle branch block,,Left atrial hypertrophy,,STEMI: anterior wall; STEMI: lateral wall; STEMI: septal; STEMI: apical,,,84,data\evaluation\processed\ludb\signals\24.npy
+25,500,5000,51,M,Sinus rhythm,normal,Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,anterior wall; septal; apical,,84,data\evaluation\processed\ludb\signals\25.npy
+26,500,5000,54,M,Sinus rhythm,left axis deviation,Left anterior hemiblock,,Left atrial hypertrophy,,Scar formation: anterior wall; Scar formation: lateral wall; Scar formation: septal; Scar formation: apical; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: apical,,,96,data\evaluation\processed\ludb\signals\26.npy
+27,500,5000,66,M,Sinus bradycardia,horizontal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,anterior wall; lateral wall; inferior wall,,84,data\evaluation\processed\ludb\signals\27.npy
+28,500,5000,77,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,Scar formation: anterior wall; Scar formation: septal; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: posterior wall,,,96,data\evaluation\processed\ludb\signals\28.npy
+29,500,5000,41,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,posterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: apical,,,108,data\evaluation\processed\ludb\signals\29.npy
+3,500,5000,53,M,Sinus rhythm,vertical,,,Left atrial hypertrophy; Left ventricular hypertrophy,,lateral wall; inferior wall,,,108,data\evaluation\processed\ludb\signals\3.npy
+30,500,5000,30,M,Sinus bradycardia,normal,,,,,,anterior wall; septal,,84,data\evaluation\processed\ludb\signals\30.npy
+32,500,5000,64,M,Sinus rhythm,left axis deviation,Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,108,data\evaluation\processed\ludb\signals\32.npy
+33,500,5000,53,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,STEMI: anterior wall; STEMI: lateral wall; STEMI: septal; STEMI: apical,,,96,data\evaluation\processed\ludb\signals\33.npy
+34,500,5000,90,F,Sinus rhythm,,III degree AV-block,,,UNIpolar ventricular pacing,,,,81,data\evaluation\processed\ludb\signals\34.npy
+35,500,5000,69,F,"Atrial flutter, typical",vertical,,,Right ventricular hypertrophy,,,,,240,data\evaluation\processed\ludb\signals\35.npy
+36,500,5000,49,F,Sinus rhythm,normal,Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\36.npy
+37,500,5000,47,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,120,data\evaluation\processed\ludb\signals\37.npy
+38,500,5000,59,F,Atrial fibrillation,left axis deviation,,"Ventricular extrasystole, localisation: RVOT, anterior wall; Ventricular extrasystole, type: single PVC; Ventricular extrasystole, type: intercalary PVC",Left ventricular hypertrophy; Left ventricular overload,,lateral wall; apical,,,180,data\evaluation\processed\ludb\signals\38.npy
+39,500,5000,74,M,Sinus bradycardia,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,anterior wall; posterior wall,,84,data\evaluation\processed\ludb\signals\39.npy
+4,500,5000,56,M,Sinus rhythm,left axis deviation,Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,inferior wall; Scar formation: inferior wall; Undefined ischemia/scar/supp.NSTEMI: inferior wall,,,108,data\evaluation\processed\ludb\signals\4.npy
+40,500,5000,57,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,108,data\evaluation\processed\ludb\signals\40.npy
+41,500,5000,34,M,Sinus bradycardia,normal,Incomplete right bundle branch block,,,,,,,72,data\evaluation\processed\ludb\signals\41.npy
+42,500,5000,74,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,anterior wall,,96,data\evaluation\processed\ludb\signals\42.npy
+43,500,5000,69,F,Sinus rhythm,horizontal,Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\43.npy
+44,500,5000,76,F,Atrial fibrillation,left axis deviation,Complete left bundle branch block,,,,Scar formation: anterior wall; Scar formation: septal; Scar formation: apical,,,108,data\evaluation\processed\ludb\signals\44.npy
+45,500,5000,84,F,Sinus rhythm,,,"Ventricular extrasystole, localisation: RVOT, anterior wall; Ventricular extrasystole, type: single PVC",,UNIpolar atrial pacing; UNIpolar ventricular pacing,,,,96,data\evaluation\processed\ludb\signals\45.npy
+47,500,5000,65,M,Sinus bradycardia,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,70,data\evaluation\processed\ludb\signals\47.npy
+48,500,5000,68,M,Sinus rhythm,normal,Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,84,data\evaluation\processed\ludb\signals\48.npy
+49,500,5000,68,M,Sinus rhythm,normal,,,Left ventricular hypertrophy,,,,,84,data\evaluation\processed\ludb\signals\49.npy
+5,500,5000,61,M,Sinus rhythm,horizontal,,,Left atrial hypertrophy,,,inferior wall,,84,data\evaluation\processed\ludb\signals\5.npy
+50,500,5000,66,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,inferior wall,,108,data\evaluation\processed\ludb\signals\50.npy
+51,500,5000,75,M,Atrial fibrillation,left axis deviation,Left anterior hemiblock; Complete left bundle branch block,,Right ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\51.npy
+52,500,5000,69,F,"Atrial flutter, typical",vertical,,,Left ventricular hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: apical,,,108,data\evaluation\processed\ludb\signals\52.npy
+53,500,5000,54,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,108,data\evaluation\processed\ludb\signals\53.npy
+54,500,5000,81,F,Sinus bradycardia,left axis deviation,Incomplete left bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: septal; Undefined ischemia/scar/supp.NSTEMI: apical,,,84,data\evaluation\processed\ludb\signals\54.npy
+55,500,5000,54,F,Sinus rhythm,left axis deviation,Left anterior hemiblock,,Right atrial overload; Left ventricular hypertrophy,,STEMI: anterior wall; STEMI: lateral wall; STEMI: septal; posterior wall; Scar formation: anterior wall; Scar formation: septal,,,96,data\evaluation\processed\ludb\signals\55.npy
+56,500,5000,46,F,Sinus rhythm,vertical,,,,,,,,120,data\evaluation\processed\ludb\signals\56.npy
+58,500,5000,34,M,Sinus rhythm,horizontal,,,,,,,,108,data\evaluation\processed\ludb\signals\58.npy
+59,500,5000,56,M,Sinus bradycardia,vertical,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,72,data\evaluation\processed\ludb\signals\59.npy
+6,500,5000,76,M,Sinus bradycardia,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,anterior wall; septal; apical,,,84,data\evaluation\processed\ludb\signals\6.npy
+60,500,5000,79,M,Sinus rhythm,left axis deviation,Incomplete right bundle branch block; Left anterior hemiblock,"Atrial extrasystole: undefined; Atrial extrasystole: left atrial; Atrial extrasystole, type: single PAC",Left ventricular hypertrophy,,,inferior wall,,96,data\evaluation\processed\ludb\signals\60.npy
+61,500,5000,58,M,Sinus rhythm,left axis deviation,I degree AV block,,Left atrial hypertrophy; Left ventricular hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: septal; Undefined ischemia/scar/supp.NSTEMI: apical,,,96,data\evaluation\processed\ludb\signals\61.npy
+62,500,5000,38,M,Sinus rhythm,horizontal,,,,,,,,108,data\evaluation\processed\ludb\signals\62.npy
+63,500,5000,27,F,Sinus arrhythmia,vertical,,,,,,,,120,data\evaluation\processed\ludb\signals\63.npy
+64,500,5000,67,M,Sinus rhythm,horizontal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,STEMI: anterior wall; STEMI: lateral wall; STEMI: septal; STEMI: inferior wall; Scar formation: anterior wall; Scar formation: lateral wall; Scar formation: septal,,,107,data\evaluation\processed\ludb\signals\64.npy
+65,500,5000,68,M,Sinus rhythm,left axis deviation,Left anterior hemiblock,,Left atrial hypertrophy,,,,,144,data\evaluation\processed\ludb\signals\65.npy
+66,500,5000,55,M,Sinus rhythm,left axis deviation,Incomplete right bundle branch block,"Atrial extrasystole: low atrial; Atrial extrasystole, type: single PAC",Left atrial hypertrophy; Left ventricular hypertrophy,,,anterior wall; lateral wall; septal,,72,data\evaluation\processed\ludb\signals\66.npy
+68,500,5000,76,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,inferior wall,,108,data\evaluation\processed\ludb\signals\68.npy
+7,500,5000,50,M,Sinus rhythm,horizontal,,"Atrial extrasystole: SA-nodal extrasystole; Atrial extrasystole, type: single PAC",Left atrial hypertrophy; Right atrial overload; Left ventricular hypertrophy,,STEMI: anterior wall; STEMI: lateral wall; STEMI: septal; STEMI: apical,,,78,data\evaluation\processed\ludb\signals\7.npy
+71,500,5000,32,M,Sinus bradycardia,normal,,,Right atrial overload; Left atrial overload,,,inferior wall,,96,data\evaluation\processed\ludb\signals\71.npy
+72,500,5000,75,F,Sinus rhythm,,Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\72.npy
+73,500,5000,57,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,anterior wall; lateral wall; septal,,96,data\evaluation\processed\ludb\signals\73.npy
+74,500,5000,69,F,Sinus rhythm,,III degree AV-block,,,UNIpolar ventricular pacing,,,,108,data\evaluation\processed\ludb\signals\74.npy
+75,500,5000,68,F,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall,,,108,data\evaluation\processed\ludb\signals\75.npy
+76,500,5000,71,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,lateral wall,,,132,data\evaluation\processed\ludb\signals\76.npy
+77,500,5000,71,M,Sinus rhythm,horizontal,I degree AV block; Incomplete right bundle branch block,,Left atrial hypertrophy; Left ventricular hypertrophy,,,anterior wall; inferior wall,,120,data\evaluation\processed\ludb\signals\77.npy
+78,500,5000,81,F,Sinus rhythm,normal,I degree AV block; Incomplete right bundle branch block,"Atrial extrasystole: SA-nodal extrasystole; Atrial extrasystole, type: single PAC",Left atrial hypertrophy; Left ventricular hypertrophy,,,,,96,data\evaluation\processed\ludb\signals\78.npy
+8,500,5000,57,F,Atrial fibrillation,,,,,UNIpolar ventricular pacing,Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: septal; Undefined ischemia/scar/supp.NSTEMI: apical,,,117,data\evaluation\processed\ludb\signals\8.npy
+80,500,5000,60,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: apical,,,132,data\evaluation\processed\ludb\signals\80.npy
+81,500,5000,68,F,Sinus rhythm,vertical,Incomplete right bundle branch block,,Right atrial overload; Left ventricular hypertrophy,,anterior wall; septal; inferior wall; apical,,,132,data\evaluation\processed\ludb\signals\81.npy
+82,500,5000,45,M,Sinus bradycardia,left axis deviation,Incomplete right bundle branch block; Left anterior hemiblock,,Left atrial hypertrophy,,Undefined ischemia/scar/supp.NSTEMI: lateral wall; Undefined ischemia/scar/supp.NSTEMI: inferior wall,,,84,data\evaluation\processed\ludb\signals\82.npy
+84,500,5000,79,M,Sinus rhythm,left axis deviation,Left anterior hemiblock,,Left atrial hypertrophy,,inferior wall; Undefined ischemia/scar/supp.NSTEMI: anterior wall; Undefined ischemia/scar/supp.NSTEMI: lateral wall,,,96,data\evaluation\processed\ludb\signals\84.npy
+85,500,5000,51,F,Sinus rhythm,horizontal,Incomplete right bundle branch block,,Left atrial hypertrophy,,,anterior wall; septal; inferior wall; apical,,120,data\evaluation\processed\ludb\signals\85.npy
+86,500,5000,50,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,STEMI: anterior wall; STEMI: septal; STEMI: apical,,,144,data\evaluation\processed\ludb\signals\86.npy
+87,500,5000,19,F,Sinus rhythm,vertical,,,Left atrial overload,,,inferior wall,,144,data\evaluation\processed\ludb\signals\87.npy
+88,500,5000,59,F,Atrial fibrillation,normal,,,Left ventricular hypertrophy,,,anterior wall; lateral wall; septal; apical,,144,data\evaluation\processed\ludb\signals\88.npy
+89,500,5000,41,F,Sinus rhythm,left axis deviation,,,Left ventricular hypertrophy,,,inferior wall,,120,data\evaluation\processed\ludb\signals\89.npy
+9,500,5000,57,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy,,,lateral wall,,108,data\evaluation\processed\ludb\signals\9.npy
+90,500,5000,69,F,Sinus rhythm,,III degree AV-block,,,BIpolar ventricular pacing,,,,96,data\evaluation\processed\ludb\signals\90.npy
+91,500,5000,38,M,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,132,data\evaluation\processed\ludb\signals\91.npy
+92,500,5000,70,F,Sinus rhythm,left axis deviation,,,Left atrial hypertrophy; Left ventricular hypertrophy,,,,,168,data\evaluation\processed\ludb\signals\92.npy
+93,500,5000,74,M,Atrial fibrillation,,,,,Biventricular pacing,,,,96,data\evaluation\processed\ludb\signals\93.npy
+94,500,5000,41,M,Sinus rhythm,normal,,,Left atrial hypertrophy,,,inferior wall,,120,data\evaluation\processed\ludb\signals\94.npy
+95,500,5000,67,F,Atrial fibrillation,,,,Left ventricular hypertrophy,UNIpolar ventricular pacing,lateral wall; septal; inferior wall; apical,,,72,data\evaluation\processed\ludb\signals\95.npy
+97,500,5000,58,M,Sinus rhythm,left axis deviation,Incomplete right bundle branch block; Left anterior hemiblock,,Left atrial hypertrophy,,,inferior wall,,96,data\evaluation\processed\ludb\signals\97.npy
+98,500,5000,53,M,Sinus rhythm,normal,,,Left atrial hypertrophy; Left ventricular hypertrophy,,inferior wall,,,96,data\evaluation\processed\ludb\signals\98.npy
+99,500,5000,28,M,Sinus arrhythmia,right axis deviation,Incomplete right bundle branch block,,,,,anterior wall; septal,,144,data\evaluation\processed\ludb\signals\99.npy

@@ -19,8 +19,6 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import wfdb
-from matplotlib import pyplot as plt
-from matplotlib.patches import Patch
 from plotly.subplots import make_subplots
 
 # ---------------------------------------------------------------------------
@@ -31,6 +29,31 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 EVAL_DATA = REPO_ROOT / "data" / "evaluation"
 RAW_ROOT = EVAL_DATA / "raw"
 PROCESSED_ROOT = EVAL_DATA / "processed"
+CATALOG_ROOT = EVAL_DATA / "catalogs"
+
+# Local WFDB trees left over from earlier downloads. STAFF stays here as a
+# shrinking cache (convert one record → delete that record's WFDB). LUDB/QT
+# are converted in full by MergeLocal, then the trees are removed.
+LOCAL_CACHES = {
+    "ludb": REPO_ROOT / "data" / "LU_DB",
+    "staff_iii": REPO_ROOT / "data" / "staff_III",
+    "ptb_xl": REPO_ROOT / "data" / "ptb-xl",
+    "qtdb": REPO_ROOT / "data" / "QT_DB",
+}
+
+PHYSIONET = {
+    "ludb": ("ludb", "1.0.1"),
+    "staff_iii": ("staffiii", "1.0.0"),
+    "ptb_xl": ("ptb-xl", "1.0.3"),
+    "qtdb": ("qtdb", "1.0.0"),
+}
+
+CATALOGUE_FALLBACK_N = {
+    "ludb": 200,
+    "qtdb": 105,
+    "staff_iii": 521,
+    "ptb_xl": 21799,
+}
 
 STANDARD_12_LEADS = [
     "I",
@@ -190,18 +213,61 @@ def processed_exists(processed_dir: Path, record_id: str) -> bool:
     return stem.with_suffix(".npy").is_file() and stem.with_suffix(".pkl").is_file() and labels.is_file()
 
 
+def _read_csv_or_empty(path: Path) -> pd.DataFrame:
+    if not path.is_file() or path.stat().st_size < 8:
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path)
+    except pd.errors.EmptyDataError:
+        return pd.DataFrame()
+
+
 def write_index(processed_dir: Path, rows: list[dict[str, Any]]) -> Path:
     path = processed_dir / "index.csv"
-    frame = pd.DataFrame(rows)
-    if path.exists() and not frame.empty:
-        existing = pd.read_csv(path)
-        combined = pd.concat([existing, frame], ignore_index=True)
-        id_col = "record_id" if "record_id" in combined.columns else combined.columns[0]
-        combined = combined.drop_duplicates(subset=[id_col], keep="last")
-        combined.to_csv(path, index=False)
-    else:
-        frame.to_csv(path, index=False)
+    incoming = pd.DataFrame(rows)
+    existing = _read_csv_or_empty(path)
+    if incoming.empty:
+        return path
+    if existing.empty:
+        incoming.to_csv(path, index=False)
+        return path
+    combined = pd.concat([existing, incoming], ignore_index=True)
+    id_col = "record_id" if "record_id" in combined.columns else combined.columns[0]
+    combined = combined.drop_duplicates(subset=[id_col], keep="last")
+    combined.to_csv(path, index=False)
     return path
+
+
+def load_index(processed_dir: Path | str) -> pd.DataFrame:
+    """Read ``index.csv``, or rebuild it from ``labels/*.json`` if the file is empty."""
+    processed_dir = Path(processed_dir)
+    index = _read_csv_or_empty(processed_dir / "index.csv")
+    if not index.empty:
+        return index
+    rebuilt: list[dict[str, Any]] = []
+    for label_path in sorted((processed_dir / "labels").glob("*.json")):
+        payload = json.loads(label_path.read_text(encoding="utf-8"))
+        row: dict[str, Any] = {"record_id": payload.get("record_id", label_path.stem)}
+        for key in (
+            "patient_id",
+            "phase",
+            "fs",
+            "n_samples",
+            "duration_s",
+            "age",
+            "sex",
+            "is_norm",
+        ):
+            if key in payload:
+                row[key] = payload[key]
+        inflations = payload.get("inflations") or []
+        if inflations:
+            row["occluded_artery"] = inflations[0].get("occluded_artery")
+        rebuilt.append(row)
+    index = pd.DataFrame(rebuilt)
+    if not index.empty:
+        index.to_csv(processed_dir / "index.csv", index=False)
+    return index
 
 
 # ---------------------------------------------------------------------------
@@ -720,47 +786,91 @@ def select_ptbxl_subset(
 
 
 # ---------------------------------------------------------------------------
-# Plots
+# Plots (Plotly)
 # ---------------------------------------------------------------------------
 
+LUDB_WAVE_COLORS = {"P": "#1f77b4", "QRS": "#d62728", "T": "#ff7f0e"}
+LUDB_WAVE_KEYS = {
+    "P": ("P_onsets", "P_peaks", "P_offsets"),
+    "QRS": ("R_onsets", "R_peaks", "R_offsets"),
+    "T": ("T_onsets", "T_peaks", "T_offsets"),
+}
 
-def _offset_leads(signal_12ch: np.ndarray, spacing: float | None = None) -> tuple[np.ndarray, float]:
-    if spacing is None:
-        spacing = float(np.nanpercentile(np.abs(signal_12ch), 95) * 2.8 + 0.5)
-    offsets = np.arange(signal_12ch.shape[0])[::-1] * spacing
-    return signal_12ch + offsets[:, None], spacing
+
+def _time_window(
+    n_samples: int, fs: int, t_start: float, t_end: float | None
+) -> tuple[int, int, float]:
+    end = (n_samples / float(fs)) if t_end is None else float(t_end)
+    i0 = max(0, int(t_start * fs))
+    i1 = min(n_samples, int(end * fs))
+    return i0, i1, end
 
 
-def plot_12_lead_strip(
+def _display_step(fs: int, display_hz: float) -> int:
+    return max(1, int(round(float(fs) / float(display_hz))))
+
+
+def _maybe_show(fig: go.Figure, show: bool) -> go.Figure:
+    if show:
+        fig.show()
+    return fig
+
+
+def plot_12_lead(
     signal_12ch: np.ndarray,
     fs: int,
     channels: Sequence[str],
     *,
-    title: str,
+    title: str = "",
     t_start: float = 0.0,
     t_end: float | None = None,
-    ax=None,
-):
+    display_hz: float = 100.0,
+    show: bool = False,
+) -> go.Figure:
+    """Interactive 12-lead ECG. Zooming the x-axis updates every row."""
     n_samples = signal_12ch.shape[1]
-    t_end = (n_samples / fs) if t_end is None else t_end
-    i0 = max(0, int(t_start * fs))
-    i1 = min(n_samples, int(t_end * fs))
-    time = np.arange(i0, i1) / fs
-    stacked, spacing = _offset_leads(signal_12ch[:, i0:i1])
-    created = False
-    if ax is None:
-        _, ax = plt.subplots(figsize=(14, 8))
-        created = True
-    for row, name in enumerate(channels):
-        ax.plot(time, stacked[row], color="black", lw=0.8)
-        ax.text(time[0] if len(time) else 0.0, stacked[row, 0] + spacing * 0.15, name, fontsize=9)
-    ax.set_xlabel("Time (s)")
-    ax.set_yticks([])
-    ax.set_title(title)
-    ax.set_xlim(t_start, t_end)
-    if created:
-        return ax.figure, ax
-    return ax
+    i0, i1, end = _time_window(n_samples, fs, t_start, t_end)
+    step = _display_step(fs, display_hz)
+    t = np.arange(i0, i1, step) / float(fs)
+    n_leads = signal_12ch.shape[0]
+    fig = make_subplots(
+        rows=n_leads,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.008,
+        row_heights=[1.0] * n_leads,
+    )
+    for i, name in enumerate(channels):
+        fig.add_trace(
+            go.Scattergl(
+                x=t,
+                y=signal_12ch[i, i0:i1:step],
+                mode="lines",
+                line=dict(color="black", width=0.8),
+                name=str(name),
+                showlegend=False,
+                hovertemplate=f"{name}: %{{y:.3f}} mV<extra></extra>",
+            ),
+            row=i + 1,
+            col=1,
+        )
+        fig.update_yaxes(
+            title_text=str(name),
+            title_standoff=0,
+            row=i + 1,
+            col=1,
+            showticklabels=False,
+            ticks="",
+        )
+    fig.update_xaxes(title_text="Time (s)", range=[t_start, end], row=n_leads, col=1)
+    fig.update_xaxes(rangeslider=dict(visible=True, thickness=0.04), row=n_leads, col=1)
+    fig.update_layout(
+        title=dict(text=title, x=0.01, xanchor="left"),
+        height=70 * n_leads + 80,
+        margin=dict(l=60, r=20, t=50, b=40),
+        hovermode="x unified",
+    )
+    return _maybe_show(fig, show)
 
 
 def plot_ludb_delineation(
@@ -771,35 +881,67 @@ def plot_ludb_delineation(
     *,
     lead: str = "II",
     title: str = "LUDB cardiologist marks",
-):
+    display_hz: float = 100.0,
+    show: bool = False,
+) -> go.Figure:
     """Single-lead view with P / QRS / T spans from LUDB annotations."""
     if lead not in channels:
         lead = channels[1] if len(channels) > 1 else channels[0]
     idx = list(channels).index(lead)
     y = signal_12ch[idx]
-    t = np.arange(len(y)) / fs
-    fig, ax = plt.subplots(figsize=(14, 4))
-    ax.plot(t, y, color="black", lw=0.9, label=lead)
-    colors = {"P": "#1f77b4", "QRS": "#d62728", "T": "#ff7f0e"}
+    step = _display_step(fs, display_hz)
+    t = np.arange(0, len(y), step) / float(fs)
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scattergl(
+            x=t,
+            y=y[::step],
+            mode="lines",
+            line=dict(color="black", width=0.9),
+            name=str(lead),
+            hovertemplate=f"{lead}: %{{y:.3f}} mV<extra></extra>",
+        )
+    )
     marks = delineation.get(lead, {})
-    for wave, (on_key, peak_key, off_key) in {
-        "P": ("P_onsets", "P_peaks", "P_offsets"),
-        "QRS": ("R_onsets", "R_peaks", "R_offsets"),
-        "T": ("T_onsets", "T_peaks", "T_offsets"),
-    }.items():
+    for wave, (on_key, peak_key, off_key) in LUDB_WAVE_KEYS.items():
+        color = LUDB_WAVE_COLORS[wave]
         ons = marks.get(on_key, [])
         peaks = marks.get(peak_key, [])
         offs = marks.get(off_key, [])
         for a, b in zip(ons, offs):
-            ax.axvspan(a / fs, b / fs, color=colors[wave], alpha=0.18)
-        ax.scatter([p / fs for p in peaks], [y[p] for p in peaks if p < len(y)],
-                   color=colors[wave], s=18, zorder=3, label=wave)
-    ax.set_xlabel("Time (s)")
-    ax.set_ylabel("mV")
-    ax.set_title(title)
-    ax.legend(loc="upper right", ncol=4, fontsize=8)
-    fig.tight_layout()
-    return fig, ax
+            if a is None or b is None:
+                continue
+            fig.add_vrect(
+                x0=a / float(fs),
+                x1=b / float(fs),
+                fillcolor=color,
+                opacity=0.18,
+                line_width=0,
+                layer="below",
+            )
+        peak_t = [p / float(fs) for p in peaks if p is not None and 0 <= p < len(y)]
+        peak_y = [float(y[p]) for p in peaks if p is not None and 0 <= p < len(y)]
+        fig.add_trace(
+            go.Scatter(
+                x=peak_t,
+                y=peak_y,
+                mode="markers",
+                marker=dict(color=color, size=8),
+                name=wave,
+                hovertemplate=f"{wave} peak: %{{x:.3f}} s<extra></extra>",
+            )
+        )
+    fig.update_layout(
+        title=dict(text=title, x=0.01, xanchor="left"),
+        xaxis_title="Time (s)",
+        yaxis_title="mV",
+        height=380,
+        margin=dict(l=50, r=20, t=50, b=40),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, x=1, xanchor="right"),
+        hovermode="x unified",
+    )
+    fig.update_xaxes(rangeslider=dict(visible=True, thickness=0.08))
+    return _maybe_show(fig, show)
 
 
 STAFF_PHASE_COLORS = {
@@ -833,6 +975,38 @@ def load_processed_record(
         meta = pickle.load(handle)
     labels = json.loads(label_path.read_text(encoding="utf-8"))
     return signal, meta, labels
+
+
+def format_ludb_title(record_id: str, labels: dict[str, Any]) -> str:
+    parts: list[str] = [f"LUDB {record_id}"]
+    sex = labels.get("sex")
+    age = labels.get("age")
+    demo = ", ".join(p for p in (sex, f"{age}y" if age not in (None, "") else None) if p)
+    if demo:
+        parts.append(demo)
+    rhythm = (labels.get("diagnoses") or {}).get("Rhythm") or []
+    if rhythm:
+        parts.append("; ".join(str(item) for item in rhythm))
+    return " · ".join(parts)
+
+
+def format_ptbxl_title(record_id: str, labels: dict[str, Any]) -> str:
+    parts: list[str] = [f"PTB-XL {record_id}"]
+    sex = labels.get("sex_label")
+    age = labels.get("age")
+    age_text = None
+    if age not in (None, ""):
+        try:
+            age_text = f"{int(float(age))}y"
+        except (TypeError, ValueError):
+            age_text = f"{age}y"
+    demo = " ".join(str(p) for p in (sex, age_text) if p)
+    if demo:
+        parts.append(demo)
+    supers = labels.get("diagnostic_superclasses") or []
+    if supers:
+        parts.append(", ".join(str(item) for item in supers))
+    return " · ".join(parts)
 
 
 def format_staff_title(record_id: str, labels: dict[str, Any]) -> str:
@@ -1045,99 +1219,1009 @@ def plot_staff_record(
     return fig
 
 
-def plot_staff_timeline(
-    signal_12ch: np.ndarray,
-    fs: int,
-    channels: Sequence[str],
-    segments: list[dict[str, Any]],
-    events: list[dict[str, Any]],
+def plot_ludb_record(
+    record_id: str,
+    processed_dir: Path | str | None = None,
     *,
-    lead: str = "V3",
-    title: str = "STAFF III occlusion timeline",
-):
-    if lead not in channels:
-        lead = "II" if "II" in channels else channels[0]
-    idx = list(channels).index(lead)
-    y = signal_12ch[idx]
-    # Downsample for display of multi-minute records.
-    step = max(1, int(fs / 50))
-    t = np.arange(0, len(y), step) / fs
-    y_ds = y[::step]
-    fig, axes = plt.subplots(
-        2, 1, figsize=(14, 5), sharex=True, gridspec_kw={"height_ratios": [3, 1]}
-    )
-    axes[0].plot(t, y_ds, color="black", lw=0.6)
-    axes[0].set_ylabel(f"{lead} (mV)")
-    axes[0].set_title(title)
+    lead: str = "II",
+    display_hz: float = 100.0,
+    title: str | None = None,
+    show: bool = True,
+) -> tuple[go.Figure, go.Figure]:
+    """Load a processed LUDB record and show 12-lead + cardiologist P/QRS/T marks.
 
-    colors = {
-        "pre_inflation": "#9ecae1",
-        "inflation": "#fc9272",
-        "post_inflation": "#a1d99b",
-        "full_recording": "#cccccc",
-    }
-    for seg in segments:
-        if seg.get("kind") == "instant":
-            continue
-        axes[1].axvspan(
-            seg["start"] / fs,
-            seg["end"] / fs,
-            color=colors.get(seg["name"], "#dddddd"),
-            alpha=0.9,
-        )
-    for event in events:
-        axes[0].axvline(event["sample"] / fs, color="#54278f", ls="--", lw=1)
-        axes[1].axvline(event["sample"] / fs, color="#54278f", ls="--", lw=1)
-    axes[1].set_yticks([])
-    axes[1].set_xlabel("Time (s)")
-    legend = [
-        Patch(facecolor=color, label=name.replace("_", " "))
-        for name, color in colors.items()
-        if any(seg.get("name") == name for seg in segments)
-    ]
-    if legend:
-        axes[1].legend(handles=legend, loc="upper right", fontsize=8, ncol=3)
-    fig.tight_layout()
-    return fig, axes
+    Example::
+
+        C.plot_ludb_record("1", PROC_DIR)
+    """
+    processed_dir = Path(processed_dir) if processed_dir is not None else PROCESSED_ROOT / "ludb"
+    signal, meta, labels = load_processed_record(processed_dir, record_id)
+    fs = int(meta["fs"])
+    channels = list(meta["channels"])
+    heading = title or format_ludb_title(record_id, labels)
+    fig12 = plot_12_lead(
+        signal, fs, channels, title=heading, display_hz=display_hz, show=False
+    )
+    fig_dx = plot_ludb_delineation(
+        signal,
+        fs,
+        channels,
+        labels.get("delineation") or {},
+        lead=lead,
+        title=f"{heading} — lead {lead} P / QRS / T",
+        display_hz=display_hz,
+        show=False,
+    )
+    if show:
+        fig12.show()
+        fig_dx.show()
+    return fig12, fig_dx
+
+
+def plot_ptbxl_record(
+    record_id: str,
+    processed_dir: Path | str | None = None,
+    *,
+    display_hz: float = 100.0,
+    title: str | None = None,
+    show: bool = True,
+) -> go.Figure:
+    """Load a processed PTB-XL record and show the interactive 12-lead plot.
+
+    Example::
+
+        C.plot_ptbxl_record("00400_hr", PROC_DIR)
+    """
+    processed_dir = Path(processed_dir) if processed_dir is not None else PROCESSED_ROOT / "ptb_xl"
+    signal, meta, labels = load_processed_record(processed_dir, record_id)
+    fig = plot_12_lead(
+        signal,
+        int(meta["fs"]),
+        list(meta["channels"]),
+        title=title or format_ptbxl_title(record_id, labels),
+        display_hz=display_hz,
+        show=False,
+    )
+    return _maybe_show(fig, show)
 
 
 def plot_category_counts(
-    counts: pd.Series,
+    counts: pd.Series | dict[Any, Any],
     *,
     title: str,
     xlabel: str = "Records",
     color: str = "#3182bd",
-):
-    fig, ax = plt.subplots(figsize=(10, max(3, 0.35 * len(counts))))
-    ordered = counts.sort_values()
-    ordered.plot.barh(ax=ax, color=color)
-    ax.set_title(title)
-    ax.set_xlabel(xlabel)
-    fig.tight_layout()
-    return fig, ax
+    show: bool = True,
+) -> go.Figure:
+    series = counts if isinstance(counts, pd.Series) else pd.Series(counts)
+    ordered = series.sort_values()
+    fig = go.Figure(
+        go.Bar(
+            x=ordered.to_numpy(),
+            y=[str(idx) for idx in ordered.index],
+            orientation="h",
+            marker_color=color,
+            hovertemplate="%{y}: %{x}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title=dict(text=title, x=0.01, xanchor="left"),
+        xaxis_title=xlabel,
+        yaxis=dict(automargin=True),
+        height=max(320, 28 * max(len(ordered), 1) + 80),
+        margin=dict(l=20, r=20, t=50, b=40),
+        showlegend=False,
+    )
+    return _maybe_show(fig, show)
 
 
-def plot_cooccurrence(binary: pd.DataFrame, *, title: str):
+def plot_count_panels(
+    panels: Sequence[tuple[pd.Series, str] | tuple[pd.Series, str, str]],
+    *,
+    show: bool = True,
+) -> go.Figure:
+    """Side-by-side vertical bar charts, e.g. NORM vs sex in PTB-XL."""
+    n = max(1, len(panels))
+    fig = make_subplots(
+        rows=1,
+        cols=n,
+        subplot_titles=[str(panel[1]) for panel in panels],
+    )
+    default_colors = ["#31a354", "#3182bd", "#e6550d", "#6a51a3"]
+    for i, panel in enumerate(panels):
+        series, _title = panel[0], panel[1]
+        color = panel[2] if len(panel) > 2 else default_colors[i % len(default_colors)]
+        fig.add_trace(
+            go.Bar(
+                x=[str(idx) for idx in series.index],
+                y=series.to_numpy(),
+                marker_color=color,
+                showlegend=False,
+                hovertemplate="%{x}: %{y}<extra></extra>",
+            ),
+            row=1,
+            col=i + 1,
+        )
+    fig.update_layout(height=380, margin=dict(l=40, r=20, t=50, b=40))
+    return _maybe_show(fig, show)
+
+
+def plot_cooccurrence(binary: pd.DataFrame, *, title: str, show: bool = True) -> go.Figure:
     cols = list(binary.columns)
-    matrix = np.zeros((len(cols), len(cols)), dtype=int)
-    values = binary.astype(int).to_numpy()
-    for i, _ in enumerate(cols):
-        for j, _ in enumerate(cols):
-            matrix[i, j] = int(np.sum(values[:, i] & values[:, j]))
-    fig, ax = plt.subplots(figsize=(8, 7))
-    im = ax.imshow(matrix, cmap="Blues")
-    ax.set_xticks(range(len(cols)))
-    ax.set_yticks(range(len(cols)))
-    ax.set_xticklabels(cols, rotation=60, ha="right", fontsize=8)
-    ax.set_yticklabels(cols, fontsize=8)
-    ax.set_title(title)
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-    fig.tight_layout()
-    return fig, ax
+    values = binary.astype(int).to_numpy() if len(cols) else np.zeros((0, 0), dtype=int)
+    matrix = values.T @ values if values.size else np.zeros((len(cols), len(cols)), dtype=int)
+    fig = go.Figure(
+        go.Heatmap(
+            z=matrix,
+            x=cols,
+            y=cols,
+            colorscale="Blues",
+            text=matrix,
+            texttemplate="%{text}",
+            hovertemplate="%{y} ∩ %{x}: %{z}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title=dict(text=title, x=0.01, xanchor="left"),
+        height=max(420, 28 * max(len(cols), 1) + 120),
+        margin=dict(l=20, r=20, t=50, b=80),
+        xaxis=dict(tickangle=-45),
+        yaxis=dict(autorange="reversed"),
+    )
+    return _maybe_show(fig, show)
 
 
-def save_figure(fig, processed_dir: Path, name: str) -> Path:
-    dest = processed_dir / "figures" / f"{name}.png"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=140, bbox_inches="tight")
-    return dest
+# ---------------------------------------------------------------------------
+# JSON / skip / WFDB cleanup
+# ---------------------------------------------------------------------------
+
+
+def jsonable(value: Any) -> Any:
+    """Turn NaN / numpy scalars into JSON-safe Python values."""
+    if value is None:
+        return None
+    if isinstance(value, (float, np.floating)) and np.isnan(value):
+        return None
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if isinstance(value, (np.integer,)):
+        return int(value)
+    if isinstance(value, (np.floating,)):
+        return float(value)
+    if isinstance(value, np.ndarray):
+        return [jsonable(v) for v in value.tolist()]
+    if isinstance(value, (list, tuple)):
+        return [jsonable(v) for v in value]
+    return value
+
+
+def unprocessed_ids(
+    processed_dir: Path | str,
+    record_ids: Sequence[str],
+    *,
+    overwrite: bool = False,
+) -> list[str]:
+    processed_dir = Path(processed_dir)
+    if overwrite:
+        return [str(rid) for rid in record_ids]
+    return [str(rid) for rid in record_ids if not processed_exists(processed_dir, str(rid))]
+
+
+def processed_record_ids(processed_dir: Path | str) -> list[str]:
+    processed_dir = Path(processed_dir)
+    labels = processed_dir / "labels"
+    if not labels.is_dir():
+        return []
+    return sorted(
+        path.stem
+        for path in labels.glob("*.json")
+        if processed_exists(processed_dir, path.stem)
+    )
+
+
+def _npy_rel(processed_dir: Path, record_id: str) -> str:
+    path = processed_dir / "signals" / f"{record_id}.npy"
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def delete_wfdb_stem(stem: Path, suffixes: Sequence[str]) -> list[Path]:
+    """Unlink ``stem.suffix`` files that exist. ``suffixes`` include the dot (``.dat``)."""
+    removed: list[Path] = []
+    for suffix in suffixes:
+        path = stem.with_suffix(suffix)
+        if path.is_file():
+            path.unlink()
+            removed.append(path)
+    return removed
+
+
+LUDB_WFDB_SUFFIXES = [".dat", ".hea"] + [f".{ext}" for ext in LUDB_LEAD_ANN_EXTS]
+STAFF_WFDB_SUFFIXES = [".dat", ".hea", ".event"]
+QTDB_WFDB_SUFFIXES = [".dat", ".hea", ".q1c", ".q2c"]
+PTBXL_WFDB_SUFFIXES = [".dat", ".hea"]
+
+
+# ---------------------------------------------------------------------------
+# Catalogs (tiny metadata kept after raw waveforms are deleted)
+# ---------------------------------------------------------------------------
+
+
+def ensure_catalogs() -> dict[str, Path]:
+    """Copy or download the small catalogue files into ``data/evaluation/catalogs/``."""
+    CATALOG_ROOT.mkdir(parents=True, exist_ok=True)
+    out: dict[str, Path] = {}
+
+    def _first_existing(dest: Path, sources: Sequence[Path]) -> Path | None:
+        if dest.is_file() and dest.stat().st_size > 0:
+            return dest
+        for source in sources:
+            if source.is_file() and source.stat().st_size > 0:
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, dest)
+                return dest
+        return dest if dest.is_file() else None
+
+    ludb_csv = CATALOG_ROOT / "ludb.csv"
+    found = _first_existing(
+        ludb_csv,
+        [RAW_ROOT / "ludb" / "ludb.csv", LOCAL_CACHES["ludb"] / "ludb.csv"],
+    )
+    if found is None:
+        download_files("ludb", ["ludb.csv"], CATALOG_ROOT, version="1.0.1")
+    out["ludb.csv"] = ludb_csv
+
+    ludb_records = CATALOG_ROOT / "ludb_RECORDS"
+    _first_existing(
+        ludb_records,
+        [RAW_ROOT / "ludb" / "RECORDS", LOCAL_CACHES["ludb"] / "RECORDS"],
+    )
+    if not ludb_records.is_file():
+        download_files("ludb", ["RECORDS"], CATALOG_ROOT, version="1.0.1")
+        downloaded = CATALOG_ROOT / "RECORDS"
+        if downloaded.is_file() and not ludb_records.is_file():
+            downloaded.replace(ludb_records)
+    out["ludb_RECORDS"] = ludb_records
+
+    staff_xlsx = CATALOG_ROOT / "STAFF-III-Database-Annotations.xlsx"
+    found = _first_existing(
+        staff_xlsx,
+        [
+            RAW_ROOT / "staff_iii" / "STAFF-III-Database-Annotations.xlsx",
+            LOCAL_CACHES["staff_iii"] / "STAFF-III-Database-Annotations.xlsx",
+        ],
+    )
+    if found is None:
+        download_single_file(
+            "https://physionet.org/files/staffiii/1.0.0/STAFF-III-Database-Annotations.xlsx",
+            staff_xlsx,
+        )
+    out["staff_xlsx"] = staff_xlsx
+
+    ptb_csv = CATALOG_ROOT / "ptbxl_database.csv"
+    ptb_scp = CATALOG_ROOT / "scp_statements.csv"
+    _first_existing(ptb_csv, [RAW_ROOT / "ptb_xl" / "ptbxl_database.csv"])
+    _first_existing(ptb_scp, [RAW_ROOT / "ptb_xl" / "scp_statements.csv"])
+    missing = [name for name, path in (("ptbxl_database.csv", ptb_csv), ("scp_statements.csv", ptb_scp)) if not path.is_file()]
+    if missing:
+        download_files("ptb-xl", missing, CATALOG_ROOT, version="1.0.3")
+    out["ptbxl_database.csv"] = ptb_csv
+    out["scp_statements.csv"] = ptb_scp
+
+    qtdb_records = CATALOG_ROOT / "qtdb_RECORDS"
+    found = _first_existing(qtdb_records, [LOCAL_CACHES["qtdb"] / "RECORDS"])
+    if found is None:
+        download_files("qtdb", ["RECORDS"], CATALOG_ROOT, version="1.0.0")
+        downloaded = CATALOG_ROOT / "RECORDS"
+        if downloaded.is_file() and not qtdb_records.is_file():
+            downloaded.replace(qtdb_records)
+    out["qtdb_RECORDS"] = qtdb_records
+    return out
+
+
+def load_ludb_catalogue() -> pd.DataFrame:
+    ensure_catalogs()
+    path = CATALOG_ROOT / "ludb.csv"
+    frame = pd.read_csv(path)
+    frame.columns = [c.strip() for c in frame.columns]
+    frame["ID"] = frame["ID"].astype(str).str.strip()
+    return frame
+
+
+def load_staff_catalogue() -> pd.DataFrame:
+    ensure_catalogs()
+    return parse_staff_annotations(CATALOG_ROOT / "STAFF-III-Database-Annotations.xlsx")
+
+
+def load_ptbxl_catalogue() -> tuple[pd.DataFrame, pd.DataFrame]:
+    ensure_catalogs()
+    meta = pd.read_csv(CATALOG_ROOT / "ptbxl_database.csv")
+    statements = pd.read_csv(CATALOG_ROOT / "scp_statements.csv", index_col=0)
+    return meta, statements
+
+
+def load_qtdb_record_ids() -> list[str]:
+    ensure_catalogs()
+    path = CATALOG_ROOT / "qtdb_RECORDS"
+    if path.is_file():
+        ids = [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        if ids:
+            return ids
+    cache = LOCAL_CACHES["qtdb"]
+    return sorted(p.stem for p in cache.glob("*.hea"))
+
+
+def catalogue_size(dataset: str) -> int:
+    try:
+        if dataset == "ludb":
+            return len(load_ludb_catalogue())
+        if dataset == "staff_iii":
+            return int(load_staff_catalogue()["record_id"].nunique())
+        if dataset == "ptb_xl":
+            meta, _ = load_ptbxl_catalogue()
+            return len(meta)
+        if dataset == "qtdb":
+            return len(load_qtdb_record_ids())
+    except Exception:
+        pass
+    return CATALOGUE_FALLBACK_N.get(dataset, 0)
+
+
+# ---------------------------------------------------------------------------
+# Locate a WFDB stem (cache first, then evaluation/raw)
+# ---------------------------------------------------------------------------
+
+
+def list_cache_record_ids(dataset: str) -> list[str]:
+    cache = LOCAL_CACHES[dataset]
+    if dataset == "ludb":
+        folder = cache / "data"
+        return sorted(p.stem for p in folder.glob("*.hea")) if folder.is_dir() else []
+    if dataset == "staff_iii":
+        folder = cache / "data"
+        return sorted(p.stem for p in folder.glob("*.hea")) if folder.is_dir() else []
+    if dataset == "qtdb":
+        return sorted(p.stem for p in cache.glob("*.hea")) if cache.is_dir() else []
+    if dataset == "ptb_xl":
+        ids = sorted(p.stem for p in cache.glob("*.hea")) if cache.is_dir() else []
+        raw = RAW_ROOT / "ptb_xl"
+        if raw.is_dir():
+            ids.extend(p.stem for p in raw.rglob("*_hr.hea"))
+        return sorted(set(ids))
+    return []
+
+
+def resolve_ludb_stem(record_id: str) -> tuple[Path | None, str | None]:
+    cache = LOCAL_CACHES["ludb"] / "data" / record_id
+    raw = RAW_ROOT / "ludb" / "data" / record_id
+    if cache.with_suffix(".hea").is_file():
+        return cache, "cache"
+    if raw.with_suffix(".hea").is_file():
+        return raw, "raw"
+    return None, None
+
+
+def resolve_staff_stem(record_id: str) -> tuple[Path | None, str | None]:
+    cache = LOCAL_CACHES["staff_iii"] / "data" / record_id
+    raw = RAW_ROOT / "staff_iii" / "data" / record_id
+    if cache.with_suffix(".hea").is_file():
+        return cache, "cache"
+    if raw.with_suffix(".hea").is_file():
+        return raw, "raw"
+    return None, None
+
+
+def resolve_qtdb_stem(record_id: str) -> tuple[Path | None, str | None]:
+    cache = LOCAL_CACHES["qtdb"] / record_id
+    raw = RAW_ROOT / "qtdb" / record_id
+    if cache.with_suffix(".hea").is_file():
+        return cache, "cache"
+    if raw.with_suffix(".hea").is_file():
+        return raw, "raw"
+    return None, None
+
+
+def resolve_ptbxl_stem(record_id: str, filename_hr: str | None = None) -> tuple[Path | None, str | None]:
+    cache_flat = LOCAL_CACHES["ptb_xl"] / record_id
+    if cache_flat.with_suffix(".hea").is_file():
+        return cache_flat, "cache"
+    if filename_hr:
+        rel = Path(str(filename_hr).replace("\\", "/"))
+        raw = RAW_ROOT / "ptb_xl" / rel
+        if raw.with_suffix(".hea").is_file():
+            return raw, "raw"
+    raw_hits = list((RAW_ROOT / "ptb_xl").rglob(f"{record_id}.hea")) if (RAW_ROOT / "ptb_xl").is_dir() else []
+    if raw_hits:
+        return raw_hits[0].with_suffix(""), "raw"
+    return None, None
+
+
+# ---------------------------------------------------------------------------
+# Convert one record → npy + pkl + json + index row
+# ---------------------------------------------------------------------------
+
+
+def convert_ludb_record(src_stem: Path, processed_dir: Path, record_id: str) -> dict[str, Any]:
+    record = wfdb.rdrecord(str(src_stem))
+    signal_12, channels = to_12_lead(record.p_signal.T, record.sig_name)
+    save_signal_pair(processed_dir / "signals" / record_id, signal_12, record.fs, channels)
+    parsed = parse_ludb_comments(record.comments)
+    delineation = load_ludb_delineation(src_stem)
+    n_qrs = sum(len(v.get("R_peaks", [])) for v in delineation.values())
+    payload = {
+        "dataset": "ludb",
+        "record_id": record_id,
+        "fs": int(record.fs),
+        "n_samples": int(record.sig_len),
+        "channels": channels,
+        "age": parsed["age"],
+        "sex": parsed["sex"],
+        "diagnoses": parsed["diagnoses"],
+        "delineation": delineation,
+        "n_qrs_annotations_all_leads": n_qrs,
+    }
+    save_label_json(processed_dir / "labels" / f"{record_id}.json", payload)
+    dx = parsed["diagnoses"]
+    return {
+        "record_id": record_id,
+        "fs": int(record.fs),
+        "n_samples": int(record.sig_len),
+        "age": parsed["age"],
+        "sex": parsed["sex"],
+        "rhythm": "; ".join(dx["Rhythm"]),
+        "axis": "; ".join(dx["Electric axis of the heart"]),
+        "conduction": "; ".join(dx["Conduction abnormalities"]),
+        "extrasystoles": "; ".join(dx["Extrasystolies"]),
+        "hypertrophy": "; ".join(dx["Hypertrophies"]),
+        "pacing": "; ".join(dx["Cardiac pacing"]),
+        "ischemia": "; ".join(dx["Ischemia"]),
+        "nonspecific_repol": "; ".join(dx["Non-specific repolarization abnormalities"]),
+        "other": "; ".join(dx["Other states"]),
+        "n_qrs_annotations_all_leads": n_qrs,
+        "npy": _npy_rel(processed_dir, record_id),
+    }
+
+
+def convert_staff_record(
+    src_stem: Path,
+    processed_dir: Path,
+    record_id: str,
+    annotations: pd.DataFrame,
+) -> dict[str, Any]:
+    record = wfdb.rdrecord(str(src_stem))
+    signal_12, channels = to_12_lead(record.p_signal.T, record.sig_name)
+    save_signal_pair(processed_dir / "signals" / record_id, signal_12, record.fs, channels)
+    rows = annotations[annotations["record_id"] == record_id]
+    if rows.empty:
+        raise ValueError(f"No STAFF III spreadsheet row for {record_id}")
+    events = load_staff_events(src_stem)
+    inflations = []
+    for _, row in rows.iterrows():
+        inflations.append(
+            {
+                "phase_slot": row["phase_slot"],
+                "occluded_artery": jsonable(row["occluded_artery"]),
+                "occluded_artery_raw": jsonable(row["occluded_artery_raw"]),
+                "d0_s": jsonable(row["d0_s"]),
+                "d1_s": jsonable(row["d1_s"]),
+                "d2_s": jsonable(row["d2_s"]),
+                "injection_times_s": jsonable(row["injection_times_s"]),
+            }
+        )
+    first = rows.iloc[0]
+    d0 = jsonable(first["d0_s"])
+    d1 = jsonable(first["d1_s"])
+    segments = staff_segments_from_events(record.sig_len, record.fs, events, d0, d1)
+    payload = {
+        "dataset": "staff_iii",
+        "record_id": record_id,
+        "patient_id": jsonable(first["patient_id"]),
+        "age": jsonable(first["age"]),
+        "sex": jsonable(first["sex"]),
+        "fs": int(record.fs),
+        "n_samples": int(record.sig_len),
+        "duration_s": float(record.sig_len / record.fs),
+        "channels": channels,
+        "phase": first["phase"],
+        "inflations": inflations,
+        "events": events,
+        "segments": segments,
+        "header_comments": record.comments,
+    }
+    save_label_json(processed_dir / "labels" / f"{record_id}.json", payload)
+    return {
+        "record_id": record_id,
+        "patient_id": jsonable(first["patient_id"]),
+        "phase": first["phase"],
+        "occluded_artery": jsonable(first["occluded_artery"]),
+        "fs": int(record.fs),
+        "n_samples": int(record.sig_len),
+        "duration_s": round(record.sig_len / record.fs, 1),
+        "n_events": len(events),
+        "npy": _npy_rel(processed_dir, record_id),
+    }
+
+
+def convert_ptbxl_record(
+    src_stem: Path,
+    processed_dir: Path,
+    record_id: str,
+    row: pd.Series,
+    statements: pd.DataFrame,
+) -> dict[str, Any]:
+    record = wfdb.rdrecord(str(src_stem))
+    signal_12, channels = to_12_lead(record.p_signal.T, record.sig_name)
+    save_signal_pair(processed_dir / "signals" / record_id, signal_12, record.fs, channels)
+    scp = parse_scp_codes(row["scp_codes"])
+    dx = ptbxl_diagnostic_labels(scp, statements)
+    sex = jsonable(row.get("sex"))
+    payload = {
+        "dataset": "ptb_xl",
+        "record_id": record_id,
+        "ecg_id": int(row["ecg_id"]),
+        "patient_id": int(row["patient_id"]),
+        "fs": int(record.fs),
+        "n_samples": int(record.sig_len),
+        "channels": channels,
+        "age": jsonable(row.get("age")),
+        "sex": int(sex) if sex is not None else None,
+        "sex_label": {0: "male", 1: "female"}.get(int(sex) if sex is not None else -1),
+        "strat_fold": jsonable(row.get("strat_fold")),
+        "report": None if pd.isna(row.get("report")) else str(row["report"]),
+        "heart_axis": None if pd.isna(row.get("heart_axis")) else str(row["heart_axis"]),
+        "infarction_stadium1": None if pd.isna(row.get("infarction_stadium1")) else str(row["infarction_stadium1"]),
+        "validated_by_human": None if pd.isna(row.get("validated_by_human")) else bool(row["validated_by_human"]),
+        **dx,
+    }
+    save_label_json(processed_dir / "labels" / f"{record_id}.json", payload)
+    return {
+        "record_id": record_id,
+        "ecg_id": int(row["ecg_id"]),
+        "patient_id": int(row["patient_id"]),
+        "sex": payload["sex_label"],
+        "age": payload["age"],
+        "strat_fold": payload["strat_fold"],
+        "is_norm": dx["is_norm"],
+        "superclasses": ";".join(dx["diagnostic_superclasses"]),
+        "subclasses": ";".join(dx["diagnostic_subclasses"]),
+        "scp_codes": ";".join(f"{k}:{v}" for k, v in scp.items()),
+        "npy": _npy_rel(processed_dir, record_id),
+    }
+
+
+def parse_qtdb_lead_annotation(ann: Any) -> dict[str, list[int | None]]:
+    """Pair P/QRS/T marks. QTDB often stores T as ``t )`` with no opening ``(``."""
+    out: dict[str, list[int | None]] = {
+        "P_onsets": [],
+        "P_peaks": [],
+        "P_offsets": [],
+        "R_onsets": [],
+        "R_peaks": [],
+        "R_offsets": [],
+        "T_onsets": [],
+        "T_peaks": [],
+        "T_offsets": [],
+    }
+    samples = list(np.asarray(ann.sample).tolist())
+    symbols = list(ann.symbol)
+    peak_map = {
+        "p": ("P_onsets", "P_peaks", "P_offsets"),
+        "N": ("R_onsets", "R_peaks", "R_offsets"),
+        "t": ("T_onsets", "T_peaks", "T_offsets"),
+    }
+    index = 0
+    while index < len(symbols):
+        if (
+            index + 2 < len(symbols)
+            and symbols[index] == "("
+            and symbols[index + 2] == ")"
+            and symbols[index + 1] in peak_map
+        ):
+            onset_key, peak_key, offset_key = peak_map[symbols[index + 1]]
+            out[onset_key].append(int(samples[index]))
+            out[peak_key].append(int(samples[index + 1]))
+            out[offset_key].append(int(samples[index + 2]))
+            index += 3
+        elif (
+            index + 1 < len(symbols)
+            and symbols[index] in peak_map
+            and symbols[index + 1] == ")"
+        ):
+            onset_key, peak_key, offset_key = peak_map[symbols[index]]
+            out[onset_key].append(None)
+            out[peak_key].append(int(samples[index]))
+            out[offset_key].append(int(samples[index + 1]))
+            index += 2
+        else:
+            index += 1
+    return out
+
+
+def load_qtdb_delineation(record_path: Path, channel_names: Sequence[str]) -> dict[str, dict[str, Any]]:
+    """``{annotator: {lead: marks}}`` for ``q1c`` / ``q2c`` when those files exist."""
+    by_annotator: dict[str, dict[str, Any]] = {}
+    for ext in ("q1c", "q2c"):
+        if not record_path.with_suffix(f".{ext}").is_file():
+            continue
+        try:
+            ann = wfdb.rdann(str(record_path), ext)
+        except Exception:
+            continue
+        per_lead: dict[str, dict[str, Any]] = {}
+        chans = list(ann.chan) if ann.chan is not None else [0] * len(ann.sample)
+        for chan_idx in sorted(set(int(c) for c in chans)):
+            mask = [int(c) == chan_idx for c in chans]
+            class _Ann:
+                pass
+
+            subset = _Ann()
+            subset.sample = np.asarray(ann.sample)[np.asarray(mask)]
+            subset.symbol = [sym for sym, keep in zip(ann.symbol, mask) if keep]
+            lead = channel_names[chan_idx] if chan_idx < len(channel_names) else str(chan_idx)
+            per_lead[lead] = parse_qtdb_lead_annotation(subset)
+        by_annotator[ext] = per_lead
+    return by_annotator
+
+
+def qtdb_record_files(record_id: str, include_q2c: bool = True) -> list[str]:
+    files = [f"{record_id}.dat", f"{record_id}.hea", f"{record_id}.q1c"]
+    if include_q2c:
+        files.append(f"{record_id}.q2c")
+    return files
+
+
+def convert_qtdb_record(src_stem: Path, processed_dir: Path, record_id: str) -> dict[str, Any]:
+    record = wfdb.rdrecord(str(src_stem))
+    signal = np.asarray(record.p_signal.T, dtype=np.float64)
+    channels = [canonicalize_lead_name(name) for name in record.sig_name]
+    save_signal_pair(processed_dir / "signals" / record_id, signal, record.fs, channels)
+    delineation = load_qtdb_delineation(src_stem, channels)
+    n_qrs = 0
+    for per_lead in delineation.values():
+        for marks in per_lead.values():
+            n_qrs += len([p for p in marks.get("R_peaks", []) if p is not None])
+    payload = {
+        "dataset": "qtdb",
+        "record_id": record_id,
+        "fs": int(record.fs),
+        "n_samples": int(record.sig_len),
+        "n_leads": int(record.n_sig),
+        "channels": channels,
+        "comments": list(record.comments or []),
+        "delineation": delineation,
+        "n_qrs_annotations": n_qrs,
+        "annotators": sorted(delineation),
+    }
+    save_label_json(processed_dir / "labels" / f"{record_id}.json", payload)
+    return {
+        "record_id": record_id,
+        "fs": int(record.fs),
+        "n_samples": int(record.sig_len),
+        "n_leads": int(record.n_sig),
+        "channels": ";".join(channels),
+        "annotators": ";".join(sorted(delineation)),
+        "n_qrs_annotations": n_qrs,
+        "npy": _npy_rel(processed_dir, record_id),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Acquire (cache / raw / download) → convert → optionally consume WFDB
+# ---------------------------------------------------------------------------
+
+
+def _consume_if(flag: bool, stem: Path | None, suffixes: Sequence[str]) -> list[Path]:
+    if not flag or stem is None:
+        return []
+    return delete_wfdb_stem(stem, suffixes)
+
+
+def acquire_and_convert_ludb(
+    record_id: str,
+    *,
+    overwrite: bool = False,
+    consume: bool = True,
+) -> dict[str, Any]:
+    raw_dir, proc_dir = dataset_dirs("ludb")
+    if processed_exists(proc_dir, record_id) and not overwrite:
+        cache_stem, _ = resolve_ludb_stem(record_id)
+        removed = _consume_if(consume, cache_stem, LUDB_WFDB_SUFFIXES)
+        return {"status": "skipped", "record_id": record_id, "removed": [str(p) for p in removed]}
+
+    stem, origin = resolve_ludb_stem(record_id)
+    if stem is None:
+        download_files("ludb", ludb_record_files(record_id), raw_dir, version="1.0.1")
+        stem = raw_dir / "data" / record_id
+        origin = "download"
+    if not stem.with_suffix(".hea").is_file():
+        return {"status": "failed", "record_id": record_id, "reason": "missing WFDB"}
+
+    index_row = convert_ludb_record(stem, proc_dir, record_id)
+    write_index(proc_dir, [index_row])
+    removed = _consume_if(consume, stem, LUDB_WFDB_SUFFIXES)
+    if consume and origin == "cache":
+        removed.extend(delete_wfdb_stem(raw_dir / "data" / record_id, LUDB_WFDB_SUFFIXES))
+    return {
+        "status": "converted",
+        "origin": origin,
+        "record_id": record_id,
+        "index_row": index_row,
+        "removed": [str(p) for p in removed],
+    }
+
+
+def acquire_and_convert_staff(
+    record_id: str,
+    annotations: pd.DataFrame,
+    *,
+    overwrite: bool = False,
+    consume: bool = True,
+) -> dict[str, Any]:
+    raw_dir, proc_dir = dataset_dirs("staff_iii")
+    cache_stem = LOCAL_CACHES["staff_iii"] / "data" / record_id
+    raw_stem = raw_dir / "data" / record_id
+    if processed_exists(proc_dir, record_id) and not overwrite:
+        removed = []
+        removed.extend(_consume_if(consume, cache_stem, STAFF_WFDB_SUFFIXES))
+        removed.extend(_consume_if(consume, raw_stem, STAFF_WFDB_SUFFIXES))
+        return {"status": "skipped", "record_id": record_id, "removed": [str(p) for p in removed]}
+
+    stem, origin = resolve_staff_stem(record_id)
+    if stem is None:
+        download_files(
+            "staffiii",
+            staff_record_files(record_id, include_event=True),
+            raw_dir,
+            version="1.0.0",
+        )
+        stem = raw_stem
+        origin = "download"
+    if not stem.with_suffix(".hea").is_file():
+        return {"status": "failed", "record_id": record_id, "reason": "missing WFDB"}
+
+    index_row = convert_staff_record(stem, proc_dir, record_id, annotations)
+    write_index(proc_dir, [index_row])
+    removed = _consume_if(consume, stem, STAFF_WFDB_SUFFIXES)
+    if consume and origin == "cache":
+        removed.extend(delete_wfdb_stem(raw_stem, STAFF_WFDB_SUFFIXES))
+    return {
+        "status": "converted",
+        "origin": origin,
+        "record_id": record_id,
+        "index_row": index_row,
+        "removed": [str(p) for p in removed],
+    }
+
+
+def acquire_and_convert_ptbxl(
+    record_id: str,
+    row: pd.Series,
+    statements: pd.DataFrame,
+    *,
+    filename_hr: str | None = None,
+    overwrite: bool = False,
+    consume: bool = True,
+) -> dict[str, Any]:
+    raw_dir, proc_dir = dataset_dirs("ptb_xl")
+    if processed_exists(proc_dir, record_id) and not overwrite:
+        stem, _ = resolve_ptbxl_stem(record_id, filename_hr)
+        removed = _consume_if(consume, stem, PTBXL_WFDB_SUFFIXES)
+        return {"status": "skipped", "record_id": record_id, "removed": [str(p) for p in removed]}
+
+    stem, origin = resolve_ptbxl_stem(record_id, filename_hr)
+    if stem is None:
+        rel = filename_hr or f"records500/{int(record_id.split('_')[0]) // 1000 * 1000:05d}/{record_id}"
+        download_files("ptb-xl", [f"{rel}.dat", f"{rel}.hea"], raw_dir, version="1.0.3")
+        stem, origin = resolve_ptbxl_stem(record_id, rel)
+        origin = origin or "download"
+    if stem is None or not stem.with_suffix(".hea").is_file():
+        return {"status": "failed", "record_id": record_id, "reason": "missing WFDB"}
+
+    index_row = convert_ptbxl_record(stem, proc_dir, record_id, row, statements)
+    write_index(proc_dir, [index_row])
+    removed = _consume_if(consume, stem, PTBXL_WFDB_SUFFIXES)
+    return {
+        "status": "converted",
+        "origin": origin,
+        "record_id": record_id,
+        "index_row": index_row,
+        "removed": [str(p) for p in removed],
+    }
+
+
+def acquire_and_convert_qtdb(
+    record_id: str,
+    *,
+    overwrite: bool = False,
+    consume: bool = True,
+) -> dict[str, Any]:
+    raw_dir, proc_dir = dataset_dirs("qtdb")
+    if processed_exists(proc_dir, record_id) and not overwrite:
+        stem, _ = resolve_qtdb_stem(record_id)
+        removed = _consume_if(consume, stem, QTDB_WFDB_SUFFIXES)
+        return {"status": "skipped", "record_id": record_id, "removed": [str(p) for p in removed]}
+
+    stem, origin = resolve_qtdb_stem(record_id)
+    if stem is None:
+        download_files("qtdb", qtdb_record_files(record_id), raw_dir, version="1.0.0")
+        stem = raw_dir / record_id
+        origin = "download"
+    if not stem.with_suffix(".hea").is_file():
+        return {"status": "failed", "record_id": record_id, "reason": "missing WFDB"}
+
+    index_row = convert_qtdb_record(stem, proc_dir, record_id)
+    write_index(proc_dir, [index_row])
+    removed = _consume_if(consume, stem, QTDB_WFDB_SUFFIXES)
+    if consume and origin == "cache":
+        removed.extend(delete_wfdb_stem(raw_dir / record_id, QTDB_WFDB_SUFFIXES))
+    return {
+        "status": "converted",
+        "origin": origin,
+        "record_id": record_id,
+        "index_row": index_row,
+        "removed": [str(p) for p in removed],
+    }
+
+
+def summarize_acquire(results: Sequence[dict[str, Any]]) -> str:
+    counts: dict[str, int] = {}
+    for item in results:
+        counts[item.get("status", "unknown")] = counts.get(item.get("status", "unknown"), 0) + 1
+    parts = [f"{key}={value}" for key, value in sorted(counts.items())]
+    return ", ".join(parts) if parts else "nothing to do"
+
+
+# ---------------------------------------------------------------------------
+# Inventory (DisplayDownloaded)
+# ---------------------------------------------------------------------------
+
+
+def processed_bytes(processed_dir: Path) -> int:
+    total = 0
+    signals = processed_dir / "signals"
+    if not signals.is_dir():
+        return 0
+    for path in signals.glob("*"):
+        if path.is_file():
+            total += path.stat().st_size
+    labels = processed_dir / "labels"
+    if labels.is_dir():
+        for path in labels.glob("*.json"):
+            total += path.stat().st_size
+    return total
+
+
+def dataset_inventory() -> pd.DataFrame:
+    """One row per dataset: processed vs catalogue, plus leftover STAFF/LUDB/QT cache."""
+    ensure_catalogs()
+    rows = []
+    for slug, title in (
+        ("ludb", "LUDB"),
+        ("staff_iii", "STAFF III"),
+        ("ptb_xl", "PTB-XL"),
+        ("qtdb", "QT Database"),
+    ):
+        proc = PROCESSED_ROOT / slug
+        ids = processed_record_ids(proc)
+        n_processed = len(ids)
+        total = catalogue_size(slug)
+        cache_ids = list_cache_record_ids(slug)
+        nbytes = processed_bytes(proc)
+        # Mean size of records already converted × catalogue length.
+        # STAFF durations vary; this is a linear estimate, not a guarantee.
+        if n_processed and nbytes:
+            projected = nbytes / n_processed * total
+        else:
+            projected = float("nan")
+        rows.append(
+            {
+                "dataset": slug,
+                "title": title,
+                "processed": n_processed,
+                "catalogue": total,
+                "fraction": (n_processed / total) if total else 0.0,
+                "cache_wfdb": len(cache_ids),
+                "processed_bytes": nbytes,
+                "projected_processed_bytes": projected,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
+def _format_coverage_pct(percent: float) -> str:
+    if percent >= 99.95:
+        return "100%"
+    if percent >= 10:
+        return f"{percent:.1f}%"
+    if percent > 0:
+        return f"{percent:.2f}%"
+    return "0%"
+
+
+def plot_download_fractions(inventory: pd.DataFrame | None = None, *, show: bool = True) -> go.Figure:
+    frame = dataset_inventory() if inventory is None else inventory
+    totals = frame["catalogue"].astype(float)
+    pct = np.where(totals > 0, 100.0 * frame["processed"].astype(float) / totals, 0.0)
+    remaining_pct = np.clip(100.0 - pct, 0.0, 100.0)
+    x_labels = [
+        f"{title} ({int(total)})"
+        for title, total in zip(frame["title"], frame["catalogue"])
+    ]
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            name="processed",
+            x=x_labels,
+            y=pct,
+            marker_color="#31a354",
+            hovertemplate="%{x}<br>%{y:.2f}% processed<extra></extra>",
+        )
+    )
+    fig.add_trace(
+        go.Bar(
+            name="not processed",
+            x=x_labels,
+            y=remaining_pct,
+            marker_color="#d9d9d9",
+            hovertemplate="%{x}<br>%{y:.2f}% remaining<extra></extra>",
+        )
+    )
+    for label, value in zip(x_labels, pct):
+        fig.add_annotation(
+            x=label,
+            y=101,
+            text=_format_coverage_pct(float(value)),
+            showarrow=False,
+            font=dict(size=13),
+            yanchor="bottom",
+        )
+    fig.update_layout(
+        barmode="stack",
+        title=dict(text="Processed records vs each dataset catalogue", x=0.01, xanchor="left"),
+        yaxis=dict(title="Percent of catalogue", range=[0, 118], ticksuffix="%"),
+        height=420,
+        margin=dict(l=50, r=20, t=50, b=70),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, x=1, xanchor="right"),
+    )
+    return _maybe_show(fig, show)
+
+
+def plot_qtdb_record(
+    record_id: str,
+    processed_dir: Path | str | None = None,
+    *,
+    annotator: str = "q1c",
+    lead: str | None = None,
+    display_hz: float = 100.0,
+    title: str | None = None,
+    show: bool = True,
+) -> tuple[go.Figure, go.Figure]:
+    """Native-lead plot plus cardiologist P/QRS/T marks from ``q1c`` / ``q2c``."""
+    processed_dir = Path(processed_dir) if processed_dir is not None else PROCESSED_ROOT / "qtdb"
+    signal, meta, labels = load_processed_record(processed_dir, record_id)
+    fs = int(meta["fs"])
+    channels = list(meta["channels"])
+    heading = title or f"QTDB {record_id} · {annotator}"
+    fig_leads = plot_12_lead(signal, fs, channels, title=heading, display_hz=display_hz, show=False)
+    per_annot = (labels.get("delineation") or {}).get(annotator) or {}
+    if lead is None:
+        lead = next(iter(per_annot), channels[0] if channels else "0")
+    fig_dx = plot_ludb_delineation(
+        signal,
+        fs,
+        channels,
+        per_annot,
+        lead=str(lead),
+        title=f"{heading} — lead {lead} P / QRS / T",
+        display_hz=display_hz,
+        show=False,
+    )
+    if show:
+        fig_leads.show()
+        fig_dx.show()
+    return fig_leads, fig_dx
